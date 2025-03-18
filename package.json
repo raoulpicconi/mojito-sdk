@@ -1,0 +1,52 @@
+{
+  "name": "@raoul-picconi/mojito-sdk",
+  "version": "1.0.3",
+  "description": "Mojito wallet SDK",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "types",
+    "README.md"
+  ],
+  "scripts": {
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "node build.js",
+    "build": "npm run build:js && npm run build:types",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.1",
+    "esbuild-node-externals": "^1.18.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^4.9.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "mojito",
+    "wallet",
+    "sdk",
+    "react"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/mojito-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/mojito-sdk/issues"
+  },
+  "homepage": "https://github.com/your-username/mojito-sdk#readme"
+}
