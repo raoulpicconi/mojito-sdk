@@ -15,7 +15,7 @@ const commonOptions = {
 };
 
 // Build all formats of the library
-async function buildLibrary() {
+const buildLibrary = async () => {
   try {
     // ESM Build
     await build({

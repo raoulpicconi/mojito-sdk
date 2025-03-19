@@ -16,11 +16,9 @@ export const initialize = async (): Promise<InitResponse> => {
     const handleInitResponse = (event: CustomEvent) => {
       if (event.detail && event.detail.type === "MOJITO_INIT") {
         window.removeEventListener(EXTENSION_EVENTS.INIT_RESPONSE, handleInitResponse as EventListener);
-        window.mojitoExtensionId = event.detail.extension_id;
-        resolve({
-          version: event.detail.version,
-          extensionId: event.detail.extension_id
-        });
+        const mojito = {extensionId: event.detail.extension_id, version: event.detail.version};
+        window.mojito = mojito;
+        resolve(mojito);
       }
     };
     
@@ -30,16 +28,11 @@ export const initialize = async (): Promise<InitResponse> => {
   });
 };
 
-export const getVersion = async (): Promise<string> => {
-  try {
-    const response = await sendMessageToExtension({
-      message: MESSAGE_TYPES.VERSION
-    });
-    return response.version;
-  } catch (error) {
-    console.error("Error getting extension version:", error);
-    throw error;
+export const getVersion = () => {
+  if (!window.mojito?.version) {
+    throw new Error(ERROR_TYPES.EXTENSION_NOT_FOUND);
   }
+  return window.mojito.version;
 };
 
 export const connect = async (): Promise<boolean> => {
@@ -47,9 +40,10 @@ export const connect = async (): Promise<boolean> => {
     const response = await sendMessageToExtension({
       message: MESSAGE_TYPES.CONNECT
     });
-    return response.connected === true;
+
+    return response.connected;
   } catch (error) {
     console.error("Error connecting to wallet:", error);
     throw error;
   }
-}; 
+};
