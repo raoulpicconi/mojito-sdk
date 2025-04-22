@@ -3,7 +3,7 @@ import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useAccount } from "./useAccount"
 
-export function useGetDelegations() {
+export function useDelegations() {
   const client = useClient()
   const { data } = useAccount()
 

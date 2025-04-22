@@ -351,3 +351,147 @@ export interface DataDepositParams {
 export interface DataDepositResponse {
   txId: string
 }
+
+export type BlockHeight = number
+export type BlockTimestamp = number
+export type Amount = string
+export type AccountNonce = number
+export type PerThousand = number
+
+export interface BlockInfo {
+  block: BlockWithExtraData
+  height: BlockHeight | null
+}
+
+export interface BlockWithExtraData {
+  block: Block
+  block_reward: BlockReward
+  transactions: Transaction[]
+}
+
+export interface Block {
+  header: BlockHeader
+  body: BlockBody
+}
+
+export interface BlockHeader {
+  version: number
+  previous_block_id: string
+  merkle_root: string
+  timestamp: BlockTimestamp
+  height: BlockHeight
+  block_reward: BlockReward
+}
+
+export interface BlockBody {
+  transactions: Transaction[]
+}
+
+export interface BlockReward {
+  outputs: TransactionOutput[]
+}
+
+export interface Transaction {
+  id: string
+  inputs: TransactionInput[]
+  outputs: TransactionOutput[]
+}
+
+export interface TransactionInput {
+  outpoint: UtxoOutPoint
+  signature: string
+}
+
+export interface TransactionOutput {
+  destination: string
+  value: Amount
+  token_id?: string
+}
+
+export interface UtxoOutPoint {
+  tx_id: string
+  output_index: number
+}
+
+export interface AddressInfo {
+  coin_balance: Amount
+  locked_coin_balance: Amount
+  transaction_history: string[]
+  tokens: TokenBalance[]
+}
+
+export interface TokenBalance {
+  token_id: string
+  amount: Amount
+}
+
+export interface PoolInfo {
+  pool_id: string
+  pledge: Amount
+  balance: Amount
+  height: BlockHeight
+  block_timestamp: BlockTimestamp
+  vrf_public_key: string
+  decommission_key: string
+  staker: string
+  margin_ratio_per_thousand: PerThousand
+  cost_per_block: Amount
+}
+
+export interface DelegationInfo {
+  delegation_id: string
+  pool_id: string
+  balance: Amount
+  spend_destination: string
+  next_nonce: AccountNonce
+  creation_block_height: BlockHeight
+}
+
+export interface TokenInfo {
+  authority: string
+  is_locked: boolean
+  circulating_supply: Amount
+  token_ticker: string
+  metadata_uri: string
+  number_of_decimals: number
+  total_supply: Amount
+  frozen: boolean
+  is_token_unfreezable?: boolean
+  is_token_freezable?: boolean
+}
+
+export interface NFTInfo {
+  id: string
+  owner: string
+  metadata: NFTMetadata
+}
+
+export interface NFTMetadata {
+  media_hash: string
+  name: string
+  description: string
+  ticker: string
+  creator?: string
+  icon_uri?: string
+  media_uri?: string
+  additional_metadata_uri?: string
+}
+
+export interface OrderInfo {
+  id: string
+  give_currency: string
+  ask_currency: string
+  give_amount: Amount
+  ask_amount: Amount
+  next_nonce: AccountNonce
+}
+
+export interface TimeFilter {
+  from: number
+  to: number
+}
+
+export interface PaginationParams {
+  offset?: number
+  items?: number
+}

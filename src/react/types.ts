@@ -25,4 +25,5 @@ export interface MintlayerState {
   isExtensionInstalled: boolean
   network: Network | null
   retryCount: number
+  apiServer: string
 }

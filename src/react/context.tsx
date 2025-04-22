@@ -25,6 +25,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
     maxRetries = 5,
     initialDelay = 1000,
     autoConnect = true,
+    apiServer = "https://api-server.mintlayer.org/api/v2",
   } = config
 
   const storageService = storage ?? localStorageService
@@ -41,6 +42,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       network,
       isExtensionInstalled,
       retryCount: 0,
+      apiServer,
     }
   })
 
