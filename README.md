@@ -3,6 +3,7 @@
 A JavaScript SDK for interacting with the Mojito Mintlayer Wallet browser extension.
 
 ## Installation
+
 ```bash
 npm install mojito-sdk
 ```
@@ -10,26 +11,26 @@ npm install mojito-sdk
 ## Usage
 
 ```javascript
-import MojitoSDK from 'mojito-sdk';
+import MojitoSDK from "mojito-sdk"
 
 // Check if extension is installed
-const isInstalled = await MojitoSDK.isInstalled();
+const isInstalled = await MojitoSDK.isInstalled()
 if (!isInstalled) {
-    console.log('Please install the Mojito wallet extension');
-    return;
+  console.log("Please install the Mojito wallet extension")
+  return
 }
 
 // Initialize the SDK
-await MojitoSDK.initialize();
+await MojitoSDK.initialize()
 
 // Connect to the wallet
-const connected = await MojitoSDK.connect();
+const connected = await MojitoSDK.connect()
 
 if (connected) {
-    console.log('Connected to Mojito wallet!');
-    // Get wallet addresses
-    const addresses = await MojitoSDK.wallet.getAddresses();
-    console.log('Wallet addresses:', addresses);
+  console.log("Connected to Mojito wallet!")
+  // Get wallet addresses
+  const addresses = await MojitoSDK.wallet.getAddresses()
+  console.log("Wallet addresses:", addresses)
 }
 ```
 
@@ -77,4 +78,3 @@ if (connected) {
 ## License
 
 MIT
-
