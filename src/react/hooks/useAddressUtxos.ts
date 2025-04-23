@@ -7,6 +7,13 @@ export interface UseAddressUtoxosParams {
   address: string
 }
 
+/**
+ * Hook for fetching UTXOs (Unspent Transaction Outputs) for a specific address
+ * @param params - Parameters for fetching address UTXOs
+ * @param params.address - The address to fetch UTXOs for
+ * @returns A query object containing the list of UTXOs for the specified address
+ * @throws {MintlayerApiClientNotFoundError} If the API client is not initialized
+ */
 export function useAddressUtxos(params: UseAddressUtoxosParams) {
   const { address } = params
   const { network } = useNetwork()

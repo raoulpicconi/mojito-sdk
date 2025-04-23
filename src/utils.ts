@@ -1,3 +1,9 @@
+/**
+ * Performs a deep equality comparison between two values
+ * @param a - First value to compare
+ * @param b - Second value to compare
+ * @returns True if the values are deeply equal, false otherwise
+ */
 export function deepEqual(a: any, b: any): boolean {
   if (a === b) return true
 

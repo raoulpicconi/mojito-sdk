@@ -9,6 +9,14 @@ export interface UsePoolBlockStatsParams {
   timeFilter: TimeFilter
 }
 
+/**
+ * Hook for fetching block statistics for a specific pool
+ * @param params - Parameters for fetching pool block statistics
+ * @param params.poolId - The ID of the pool to fetch statistics for
+ * @param params.timeFilter - The time filter to apply to the statistics
+ * @returns A query object containing the pool's block statistics
+ * @throws {MintlayerApiClientNotFoundError} If the API client is not initialized
+ */
 export function usePoolBlockStats(params: UsePoolBlockStatsParams) {
   const { poolId, timeFilter } = params
   const { network } = useNetwork()

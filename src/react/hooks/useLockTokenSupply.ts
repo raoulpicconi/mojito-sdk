@@ -3,6 +3,11 @@ import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
 import { LockTokenSupplyParams } from "../../index.d"
 
+/**
+ * Hook for locking a token's supply
+ * @returns A mutation object for locking token supply that can be used with React Query
+ * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
+ */
 export function useLockTokenSupply() {
   const client = useClient()
 

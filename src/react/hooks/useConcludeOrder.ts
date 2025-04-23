@@ -1,17 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
+import { ConcludeOrderParams } from "../../index.d"
 
-export interface ConcludeOrderRequestParams {
-  order_id: string
-}
-
+/**
+ * Hook for concluding an order
+ * @returns A mutation object for concluding orders that can be used with React Query
+ * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
+ */
 export function useConcludeOrder() {
   const client = useClient()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (params: ConcludeOrderRequestParams) => {
+    mutationFn: (params: ConcludeOrderParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.concludeOrder(params)
     },

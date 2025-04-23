@@ -7,6 +7,13 @@ export interface UseAddressDelegationsParams {
   address: string
 }
 
+/**
+ * Hook for fetching delegations associated with a specific address
+ * @param params - Parameters for fetching address delegations
+ * @param params.address - The address to fetch delegations for
+ * @returns A query object containing the list of delegations for the specified address
+ * @throws {MintlayerApiClientNotFoundError} If the API client is not initialized
+ */
 export function useAddressDelegations(params: UseAddressDelegationsParams) {
   const { address } = params
   const apiClient = useApiClient()

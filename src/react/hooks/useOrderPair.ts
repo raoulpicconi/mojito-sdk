@@ -9,6 +9,14 @@ export interface UseOrderPairParams {
   pagination?: PaginationParams
 }
 
+/**
+ * Hook for fetching orders for a specific trading pair
+ * @param params - Parameters for fetching order pair information
+ * @param params.pair - The trading pair to fetch orders for
+ * @param params.pagination - Optional pagination parameters
+ * @returns A query object containing the list of orders for the specified pair
+ * @throws {MintlayerApiClientNotFoundError} If the API client is not initialized
+ */
 export function useOrderPair(params: UseOrderPairParams) {
   const { pair, pagination } = params
   const { network } = useNetwork()

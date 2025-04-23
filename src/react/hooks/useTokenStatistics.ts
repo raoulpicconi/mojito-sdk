@@ -7,6 +7,13 @@ export interface UseTokenStatisticsParams {
   tokenId: string
 }
 
+/**
+ * Hook for fetching statistics for a specific token
+ * @param params - Parameters for fetching token statistics
+ * @param params.tokenId - The ID of the token to fetch statistics for
+ * @returns A query object containing the token statistics
+ * @throws {MintlayerApiClientNotFoundError} If the API client is not initialized
+ */
 export function useTokenStatistics(params: UseTokenStatisticsParams) {
   const { tokenId } = params
   const { network } = useNetwork()

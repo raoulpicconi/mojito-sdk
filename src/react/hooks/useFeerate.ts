@@ -3,6 +3,11 @@ import { useNetwork } from "./useNetwork"
 import { useApiClient } from "./useApiClient"
 import { MintlayerApiClientNotFoundError } from "../errors"
 
+/**
+ * Hook for fetching the current network fee rate
+ * @returns A query object containing the current network fee rate
+ * @throws {MintlayerApiClientNotFoundError} If the API client is not initialized
+ */
 export function useFeerate() {
   const { network } = useNetwork()
   const apiClient = useApiClient()

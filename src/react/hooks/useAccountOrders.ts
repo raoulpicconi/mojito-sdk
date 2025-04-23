@@ -3,6 +3,11 @@ import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
 
+/**
+ * Hook for fetching orders associated with the current account
+ * @returns A query object containing the list of account orders
+ * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
+ */
 export function useAccountOrders() {
   const client = useClient()
   const { data } = useAccount()

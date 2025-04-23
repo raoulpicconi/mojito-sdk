@@ -3,6 +3,11 @@ import { useClient } from "./useClient"
 import { DataDepositParams } from "../../index.d"
 import { MintlayerClientNotFoundError } from "../errors"
 
+/**
+ * Hook for performing data deposit operations
+ * @returns A mutation object for data deposit operations that can be used with React Query
+ * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
+ */
 export function useDataDeposit() {
   const client = useClient()
 

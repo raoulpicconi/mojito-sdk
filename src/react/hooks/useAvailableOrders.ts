@@ -3,6 +3,11 @@ import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
 import { useAccount } from "./useAccount"
 
+/**
+ * Hook for fetching available orders in the marketplace
+ * @returns A query object containing the list of available orders
+ * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
+ */
 export function useAvailableOrders() {
   const client = useClient()
   const { data } = useAccount()

@@ -7,6 +7,13 @@ export interface UseTransactionMerklePathParams {
   transactionId: string
 }
 
+/**
+ * Hook for fetching the Merkle path of a transaction
+ * @param params - Parameters for fetching the transaction Merkle path
+ * @param params.transactionId - The ID of the transaction to get the Merkle path for
+ * @returns A query object containing the transaction's Merkle path information
+ * @throws {MintlayerApiClientNotFoundError} If the API client is not initialized
+ */
 export function useTransactionMerklePath(params: UseTransactionMerklePathParams) {
   const { transactionId } = params
   const { network } = useNetwork()
