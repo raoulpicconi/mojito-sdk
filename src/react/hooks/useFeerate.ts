@@ -1,20 +1,17 @@
 import { useQuery } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
-import { MintlayerAPIClient } from "../../api"
 import { useNetwork } from "./useNetwork"
-export interface UseFeerateParams {
-  in_top_x_mb?: number
-}
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
-export function useFeerate(params?: UseFeerateParams) {
-  const { apiServer } = useConfig()
+export function useFeerate() {
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "feerate", network, params],
+    queryKey: ["mintlayer", "feerate", network],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getFeerate(params)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getFeerate()
     },
   })
 }

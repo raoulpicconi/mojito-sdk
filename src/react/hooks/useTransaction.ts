@@ -1,22 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseTransactionParams {
-  id: string
+  transactionId: string
 }
 
 export function useTransaction(params: UseTransactionParams) {
-  const { id } = params
-  const { apiServer } = useConfig()
+  const { transactionId } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "transaction", network, id],
+    queryKey: ["mintlayer", "transaction", network, transactionId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getTransaction(id)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getTransaction(transactionId)
     },
   })
 }

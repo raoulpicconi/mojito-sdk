@@ -27,3 +27,32 @@ export function deepEqual(a: any, b: any): boolean {
 
   return a === b
 }
+
+/**
+ * Validates if a string is a valid URL
+ * @param url - The URL to validate
+ * @returns True if the URL is valid, false otherwise
+ */
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Normalizes a URL by ensuring it has a protocol and no trailing slash
+ * @param url - The URL to normalize
+ * @returns The normalized URL
+ * @throws Error if the URL is invalid
+ */
+export function normalizeUrl(url: string): string {
+  if (!isValidUrl(url)) {
+    throw new Error("Invalid URL provided")
+  }
+
+  const normalized = url.endsWith("/") ? url.slice(0, -1) : url
+  return normalized
+}

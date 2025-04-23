@@ -1,24 +1,24 @@
-import { useConfig } from "./useConfig"
-import { useNetwork } from "./useNetwork"
 import { useQuery } from "@tanstack/react-query"
+import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 import { TimeFilter } from "../../index.d"
-import { MintlayerAPIClient } from "../../api"
 
 export interface UsePoolBlockStatsParams {
-  id: string
+  poolId: string
   timeFilter: TimeFilter
 }
 
 export function usePoolBlockStats(params: UsePoolBlockStatsParams) {
-  const { id, timeFilter } = params
-  const { apiServer } = useConfig()
+  const { poolId, timeFilter } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "poolBlockStats", network, id, timeFilter],
+    queryKey: ["mintlayer", "poolBlockStats", network, poolId, timeFilter],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getPoolBlockStats(id, timeFilter)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getPoolBlockStats(poolId, timeFilter)
     },
   })
 }

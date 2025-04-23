@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
-import { MintlayerAPIClient } from "../../api"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseTokenStatisticsParams {
   tokenId: string
@@ -9,13 +9,13 @@ export interface UseTokenStatisticsParams {
 
 export function useTokenStatistics(params: UseTokenStatisticsParams) {
   const { tokenId } = params
-  const { apiServer } = useConfig()
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "statistics", "token", network, tokenId],
+    queryKey: ["mintlayer", "tokenStatistics", network, tokenId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
       return apiClient.getTokenStatistics(tokenId)
     },
   })

@@ -1,22 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseBlockTransactionIdsParams {
-  id: string
+  blockId: string
 }
 
 export function useBlockTransactionIds(params: UseBlockTransactionIdsParams) {
-  const { id } = params
-  const { apiServer } = useConfig()
+  const { blockId } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "blockTransactionIds", network, id],
+    queryKey: ["mintlayer", "blockTransactionIds", network, blockId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getBlockTransactionIds(id)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getBlockTransactionIds(blockId)
     },
   })
 }

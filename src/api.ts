@@ -37,19 +37,27 @@ export class MintlayerAPIClient {
       url += `?${queryString.toString()}`
     }
 
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-    })
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          ...options.headers,
+        },
+      })
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorData?.message || response.statusText}`)
+      }
+
+      return response.json()
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`API request failed: ${error.message}`)
+      }
+      throw new Error("API request failed with unknown error")
     }
-
-    return response.json()
   }
 
   // Chain endpoints
@@ -226,8 +234,3 @@ export class MintlayerAPIClient {
     return this.fetch(`/order/pair/${pair}`, {}, params)
   }
 }
-
-// Example usage:
-// const client = new MintlayerAPIClient('http://localhost:8080');
-// const block = await client.getBlock('block-id');
-// const address = await client.getAddress('address');

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
-import { MintlayerAPIClient } from "../../api"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseAddressDelegationsParams {
   address: string
@@ -9,13 +9,13 @@ export interface UseAddressDelegationsParams {
 
 export function useAddressDelegations(params: UseAddressDelegationsParams) {
   const { address } = params
-  const { apiServer } = useConfig()
+  const apiClient = useApiClient()
   const { network } = useNetwork()
 
   return useQuery({
     queryKey: ["mintlayer", "addressDelegations", network, address],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
       return apiClient.getAddressDelegations(address)
     },
   })

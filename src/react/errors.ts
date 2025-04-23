@@ -9,3 +9,9 @@ export class MintlayerClientNotFoundError extends Error {
     super("`useClient` must be used within a `MintlayerProvider`.")
   }
 }
+
+export class MintlayerApiClientNotFoundError extends Error {
+  constructor() {
+    super("`useApiClient` must be used within a `MintlayerProvider`.")
+  }
+}

@@ -1,22 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseOrderParams {
-  id: string
+  orderId: string
 }
 
 export function useOrder(params: UseOrderParams) {
-  const { id } = params
-  const { apiServer } = useConfig()
+  const { orderId } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "order", network, id],
+    queryKey: ["mintlayer", "order", network, orderId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getOrder(id)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getOrder(orderId)
     },
   })
 }

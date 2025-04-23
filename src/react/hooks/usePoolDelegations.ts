@@ -1,22 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UsePoolDelegationsParams {
-  id: string
+  poolId: string
 }
 
 export function usePoolDelegations(params: UsePoolDelegationsParams) {
-  const { id } = params
-  const { apiServer } = useConfig()
+  const { poolId } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "poolDelegations", network, id],
+    queryKey: ["mintlayer", "poolDelegations", network, poolId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getPoolDelegations(id)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getPoolDelegations(poolId)
     },
   })
 }

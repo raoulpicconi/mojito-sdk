@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
 import { useNetwork } from "./useNetwork"
-import { useConfig } from "./useConfig"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseAddressInfoParams {
   address: string
@@ -10,12 +10,12 @@ export interface UseAddressInfoParams {
 export function useAddressInfo(params: UseAddressInfoParams) {
   const { address } = params
   const { network } = useNetwork()
-  const { apiServer } = useConfig()
+  const apiClient = useApiClient()
 
   return useQuery({
     queryKey: ["mintlayer", "addressInfo", network, address],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
       return apiClient.getAddress(address)
     },
   })

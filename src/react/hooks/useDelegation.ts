@@ -1,22 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseDelegationParams {
-  id: string
+  delegationId: string
 }
 
 export function useDelegation(params: UseDelegationParams) {
-  const { id } = params
-  const { apiServer } = useConfig()
+  const { delegationId } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "delegation", network, id],
+    queryKey: ["mintlayer", "delegation", network, delegationId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getDelegation(id)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getDelegation(delegationId)
     },
   })
 }

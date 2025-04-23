@@ -1,23 +1,17 @@
-import { MintlayerAPIClient } from "../../api"
 import { useQuery } from "@tanstack/react-query"
-import { PaginationParams } from "../../index.d"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
-export interface UseTokenIdsParams {
-  pagination?: PaginationParams
-}
-
-export function useTokenIds(params: UseTokenIdsParams) {
-  const { pagination } = params
-  const { apiServer } = useConfig()
+export function useTokenIds() {
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "tokenIds", network, pagination],
+    queryKey: ["mintlayer", "tokenIds", network],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getTokenIds(pagination)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getTokenIds()
     },
   })
 }

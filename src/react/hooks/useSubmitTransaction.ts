@@ -1,13 +1,13 @@
 import { useMutation } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
-import { MintlayerAPIClient } from "../../api"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export function useSubmitTransaction() {
-  const { apiServer } = useConfig()
+  const apiClient = useApiClient()
 
   return useMutation({
     mutationFn: (transaction: string) => {
-      const apiClient = new MintlayerAPIClient(apiServer)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
       return apiClient.submitTransaction(transaction)
     },
   })

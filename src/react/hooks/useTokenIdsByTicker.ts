@@ -1,24 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
 import { useNetwork } from "./useNetwork"
-import { useConfig } from "./useConfig"
-import { PaginationParams } from "../../index.d"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseTokenIdsByTickerParams {
   ticker: string
-  pagination?: PaginationParams
 }
 
 export function useTokenIdsByTicker(params: UseTokenIdsByTickerParams) {
-  const { ticker, pagination } = params
-  const { apiServer } = useConfig()
+  const { ticker } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "tokenIdsByTicker", network, ticker, pagination],
+    queryKey: ["mintlayer", "tokenIdsByTicker", network, ticker],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getTokenIdsByTicker(ticker, pagination)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getTokenIdsByTicker(ticker)
     },
   })
 }

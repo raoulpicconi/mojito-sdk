@@ -4,6 +4,8 @@ import { localStorageService } from "../storage"
 import { MintlayerConfig, MintlayerState } from "./types"
 import React, { createContext, ReactNode, useMemo, useState, useEffect, useCallback, useRef } from "react"
 import { CheckConnectionResponse, MintlayerClient, Network } from "../index.d"
+import { MintlayerAPIClient } from "../api"
+import { isValidUrl, normalizeUrl } from "../utils"
 
 interface MintlayerProviderProps {
   children: ReactNode
@@ -14,9 +16,15 @@ interface MintlayerContextValue {
   client: MintlayerClient | null
   state: MintlayerState
   setNetwork: (network: Network) => void
+  apiClient: MintlayerAPIClient
 }
 
-export const MintlayerContext = createContext<MintlayerContextValue | undefined>(undefined)
+export const MintlayerContext = createContext<MintlayerContextValue | null>(null)
+
+const defaultApiServer = {
+  testnet: "",
+  mainnet: "",
+}
 
 export function MintlayerProvider({ children, config }: MintlayerProviderProps) {
   const {
@@ -31,18 +39,26 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
   const storageService = storage ?? localStorageService
 
   const client = useRef<MintlayerClient | null>(null)
-  const pendingTimeout = useRef<number | null>(null)
+  const pendingTimeout = useRef<NodeJS.Timeout | null>(null)
   const [state, setState] = useState<MintlayerState>(() => {
     const savedNetwork = storageService.getItem(storageKeys.network) as Network | null
 
     const network = savedNetwork || config.defaultNetwork || "mainnet"
 
     const isExtensionInstalled = typeof window !== "undefined" && !!window.mintlayer?.isMintlayer
+
+    let normalizedApiServer = apiServer
+    if (isValidUrl(apiServer)) {
+      normalizedApiServer = normalizeUrl(apiServer)
+    } else {
+      normalizedApiServer = defaultApiServer[network]
+    }
+
     return {
       network,
       isExtensionInstalled,
       retryCount: 0,
-      apiServer,
+      apiServer: normalizedApiServer,
     }
   })
 
@@ -96,13 +112,18 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
     [client],
   )
 
+  const apiClient = useMemo(() => {
+    return new MintlayerAPIClient(state.apiServer)
+  }, [state.apiServer])
+
   const value = useMemo(
     () => ({
       client: client.current,
       state,
       setNetwork,
+      apiClient,
     }),
-    [client, state, setNetwork],
+    [client, state, setNetwork, apiClient],
   )
 
   return <MintlayerContext.Provider value={value}>{children}</MintlayerContext.Provider>

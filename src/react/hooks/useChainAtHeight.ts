@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseChainAtHeightParams {
   height: string
@@ -9,13 +9,13 @@ export interface UseChainAtHeightParams {
 
 export function useChainAtHeight(params: UseChainAtHeightParams) {
   const { height } = params
-  const { apiServer } = useConfig()
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
     queryKey: ["mintlayer", "chainAtHeight", network, height],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
       return apiClient.getChainAtHeight(height)
     },
   })

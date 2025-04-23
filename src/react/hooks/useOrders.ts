@@ -1,22 +1,17 @@
 import { useQuery } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
-import { MintlayerAPIClient } from "../../api"
-import { PaginationParams } from "../../index.d"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
-export interface UseOrdersParams {
-  pagination?: PaginationParams
-}
-
-export function useOrders(params?: UseOrdersParams) {
-  const { apiServer } = useConfig()
+export function useOrders() {
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "orders", network, params?.pagination],
+    queryKey: ["mintlayer", "orders", network],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getOrders(params?.pagination)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getOrders()
     },
   })
 }

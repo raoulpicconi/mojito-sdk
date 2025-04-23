@@ -1,23 +1,17 @@
 import { useQuery } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
-import { MintlayerAPIClient } from "../../api"
-import { PaginationParams } from "../../index.d"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
-export interface UsePoolsParams {
-  pagination?: PaginationParams
-  sort?: "by_height" | "by_pledge"
-}
-
-export function usePools(params?: UsePoolsParams) {
-  const { apiServer } = useConfig()
+export function usePools() {
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "pools", network, params],
+    queryKey: ["mintlayer", "pools", network],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getPools(params)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getPools()
     },
   })
 }

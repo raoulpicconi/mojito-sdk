@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
-import { MintlayerAPIClient } from "../../api"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseAddressTokenAuthorityParams {
   address: string
@@ -9,13 +9,13 @@ export interface UseAddressTokenAuthorityParams {
 
 export function useAddressTokenAuthority(params: UseAddressTokenAuthorityParams) {
   const { address } = params
-  const { apiServer } = useConfig()
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
     queryKey: ["mintlayer", "addressTokenAuthority", network, address],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
       return apiClient.getAddressTokenAuthority(address)
     },
   })

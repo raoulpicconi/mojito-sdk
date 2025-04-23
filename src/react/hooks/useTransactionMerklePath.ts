@@ -1,22 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
-import { MintlayerAPIClient } from "../../api"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseTransactionMerklePathParams {
-  id: string
+  transactionId: string
 }
 
 export function useTransactionMerklePath(params: UseTransactionMerklePathParams) {
-  const { id } = params
-  const { apiServer } = useConfig()
+  const { transactionId } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "transaction", "merkle-path", network, id],
+    queryKey: ["mintlayer", "transactionMerklePath", network, transactionId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getTransactionMerklePath(id)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getTransactionMerklePath(transactionId)
     },
   })
 }

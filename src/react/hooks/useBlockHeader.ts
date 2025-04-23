@@ -1,22 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { MintlayerAPIClient } from "../../api"
-import { useConfig } from "./useConfig"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseBlockHeaderParams {
-  id: string
+  blockId: string
 }
 
 export function useBlockHeader(params: UseBlockHeaderParams) {
-  const { id } = params
-  const { apiServer } = useConfig()
+  const { blockId } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "blockHeader", network, id],
+    queryKey: ["mintlayer", "blockHeader", network, blockId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getBlockHeader(id)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getBlockHeader(blockId)
     },
   })
 }

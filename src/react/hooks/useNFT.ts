@@ -1,22 +1,22 @@
 import { useQuery } from "@tanstack/react-query"
-import { useConfig } from "./useConfig"
-import { MintlayerAPIClient } from "../../api"
 import { useNetwork } from "./useNetwork"
+import { useApiClient } from "./useApiClient"
+import { MintlayerApiClientNotFoundError } from "../errors"
 
 export interface UseNFTParams {
-  id: string
+  nftId: string
 }
 
 export function useNFT(params: UseNFTParams) {
-  const { id } = params
-  const { apiServer } = useConfig()
+  const { nftId } = params
   const { network } = useNetwork()
+  const apiClient = useApiClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "nft", network, id],
+    queryKey: ["mintlayer", "nft", network, nftId],
     queryFn: () => {
-      const apiClient = new MintlayerAPIClient(apiServer)
-      return apiClient.getNFT(id)
+      if (!apiClient) throw new MintlayerApiClientNotFoundError()
+      return apiClient.getNFT(nftId)
     },
   })
 }
