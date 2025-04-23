@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
 import { DelegateParams } from "../../index.d"
+import { useAccount } from "./useAccount"
+import { useNetwork } from "./useNetwork"
 
 /**
  * Hook for creating a new delegation
@@ -11,6 +13,8 @@ import { DelegateParams } from "../../index.d"
 export function useDelegate() {
   const client = useClient()
   const queryClient = useQueryClient()
+  const { data: accountData } = useAccount()
+  const { network } = useNetwork()
 
   return useMutation({
     mutationFn: (params: DelegateParams) => {
@@ -18,8 +22,15 @@ export function useDelegate() {
       return client.delegate(params)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegations"] })
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegations-total"] })
+      const address = accountData?.isConnected ? accountData?.address : null
+
+      if (address) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegations", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegationsTotal", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+      }
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
     },
   })
 }

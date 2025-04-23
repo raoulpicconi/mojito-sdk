@@ -1,7 +1,8 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
 import { ChangeMetadataUriParams } from "../../index.d"
+import { useNetwork } from "./useNetwork"
 
 /**
  * Hook for changing a token's metadata URI
@@ -10,11 +11,17 @@ import { ChangeMetadataUriParams } from "../../index.d"
  */
 export function useChangeMetadataUri() {
   const client = useClient()
+  const queryClient = useQueryClient()
+  const { network } = useNetwork()
 
   return useMutation({
     mutationFn: (params: ChangeMetadataUriParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.changeMetadataUri(params)
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", network, variables.token_id] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
     },
   })
 }

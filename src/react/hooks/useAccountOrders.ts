@@ -13,7 +13,7 @@ export function useAccountOrders() {
   const { data } = useAccount()
 
   return useQuery({
-    queryKey: ["mintlayer", "account-orders", data?.isConnected ? data?.address : null],
+    queryKey: ["mintlayer", "accountOrders", data?.isConnected ? data?.address : null],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getAccountOrders()

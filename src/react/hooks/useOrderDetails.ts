@@ -17,7 +17,7 @@ export function useOrderDetails(params: UseOrderDetailsParams) {
   const client = useClient()
 
   return useQuery({
-    queryKey: ["mintlayer", "order-details", params.order_id],
+    queryKey: ["mintlayer", "orderDetails", params.order_id],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.fetchOrderDetails(params)

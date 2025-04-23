@@ -13,7 +13,7 @@ export function useXPub() {
   const { network } = useNetwork()
 
   return useQuery({
-    queryKey: ["xpub", network],
+    queryKey: ["mintlayer", "xpub", network],
     queryFn: async () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getXPub()

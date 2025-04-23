@@ -13,7 +13,7 @@ export function useTokensOwned() {
   const { data } = useAccount()
 
   return useQuery({
-    queryKey: ["mintlayer", "tokens-owned", data?.isConnected ? data?.address : null],
+    queryKey: ["mintlayer", "tokensOwned", data?.isConnected ? data?.address : null],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getTokensOwned()

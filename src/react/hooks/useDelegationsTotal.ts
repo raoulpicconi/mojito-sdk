@@ -13,7 +13,7 @@ export function useDelegationTotal() {
   const { data } = useAccount()
 
   return useQuery({
-    queryKey: ["mintlayer", "delegation-total", data?.isConnected ? data?.address : null],
+    queryKey: ["mintlayer", "delegationsTotal", data?.isConnected ? data?.address : null],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getDelegationsTotal()

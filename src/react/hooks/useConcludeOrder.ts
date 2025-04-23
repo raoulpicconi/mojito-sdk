@@ -2,6 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
 import { ConcludeOrderParams } from "../../index.d"
+import { useAccount } from "./useAccount"
+import { useNetwork } from "./useNetwork"
 
 /**
  * Hook for concluding an order
@@ -11,6 +13,8 @@ import { ConcludeOrderParams } from "../../index.d"
 export function useConcludeOrder() {
   const client = useClient()
   const queryClient = useQueryClient()
+  const { data: accountData } = useAccount()
+  const { network } = useNetwork()
 
   return useMutation({
     mutationFn: (params: ConcludeOrderParams) => {
@@ -18,8 +22,15 @@ export function useConcludeOrder() {
       return client.concludeOrder(params)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "account-orders"] })
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "available-orders"] })
+      const address = accountData?.isConnected ? accountData?.address : null
+      if (address) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "accountOrders", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "availableOrders", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+      }
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
     },
   })
 }

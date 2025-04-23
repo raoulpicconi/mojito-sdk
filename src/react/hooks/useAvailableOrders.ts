@@ -13,7 +13,7 @@ export function useAvailableOrders() {
   const { data } = useAccount()
 
   return useQuery({
-    queryKey: ["mintlayer", "available-orders", data?.isConnected ? data?.address : null],
+    queryKey: ["mintlayer", "availableOrders", data?.isConnected ? data?.address : null],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getAvailableOrders()

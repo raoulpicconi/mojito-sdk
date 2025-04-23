@@ -1,6 +1,8 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useApiClient } from "./useApiClient"
 import { MintlayerApiClientNotFoundError } from "../errors"
+import { useAccount } from "./useAccount"
+import { useNetwork } from "./useNetwork"
 
 /**
  * Hook for submitting a transaction to the network
@@ -9,11 +11,30 @@ import { MintlayerApiClientNotFoundError } from "../errors"
  */
 export function useSubmitTransaction() {
   const apiClient = useApiClient()
+  const queryClient = useQueryClient()
+  const { data: accountData } = useAccount()
+  const { network } = useNetwork()
 
   return useMutation({
     mutationFn: (transaction: string) => {
       if (!apiClient) throw new MintlayerApiClientNotFoundError()
       return apiClient.submitTransaction(transaction)
+    },
+    onSuccess: () => {
+      // Submit is generic, invalidate broadly to be safe.
+      const address = accountData?.isConnected ? accountData?.address : null
+
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
+
+      if (address) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokens-owned", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "account-orders", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "available-orders", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegations", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegation-total", address] })
+      }
     },
   })
 }
