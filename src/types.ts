@@ -527,13 +527,14 @@ export interface NFTMetadata {
   additional_metadata_uri?: string
 }
 
-export interface OrderInfo {
-  id: string
-  give_currency: string
-  ask_currency: string
-  give_amount: Amount
-  ask_amount: Amount
-  next_nonce: AccountNonce
+export interface OrderDetails {
+  order_id: string
+  nonce: number
+  conclude_destination: string
+  ask_currency: { type: "Coin" } | { type: "Token"; token_id: string }
+  give_currency: { type: "Coin" } | { type: "Token"; token_id: string }
+  ask_balance: { atoms: string; decimal: string }
+  give_balance: { atoms: string; decimal: string }
 }
 
 export interface TimeFilter {

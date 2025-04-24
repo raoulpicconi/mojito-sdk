@@ -11,7 +11,7 @@ import {
   DelegationInfo,
   PoolInfo,
   NFTInfo,
-  OrderInfo,
+  OrderDetails,
   TimeFilter,
   Amount,
   TokenDetails,
@@ -375,7 +375,7 @@ export class MintlayerAPIClient {
    * @param params - Optional pagination parameters
    * @returns Promise resolving to an array of order information
    */
-  async getOrders(params?: PaginationParams): Promise<OrderInfo[]> {
+  async getOrders(params?: PaginationParams): Promise<OrderDetails[]> {
     return this.fetch("/order", {}, params)
   }
 
@@ -384,7 +384,7 @@ export class MintlayerAPIClient {
    * @param id - The order ID to query
    * @returns Promise resolving to the order information
    */
-  async getOrder(id: string): Promise<OrderInfo> {
+  async getOrder(id: string): Promise<OrderDetails> {
     return this.fetch(`/order/${id}`)
   }
 
@@ -394,7 +394,7 @@ export class MintlayerAPIClient {
    * @param params - Optional pagination parameters
    * @returns Promise resolving to an array of order information for the specified pair
    */
-  async getOrderPair(pair: string, params?: PaginationParams): Promise<OrderInfo[]> {
+  async getOrderPair(pair: string, params?: PaginationParams): Promise<OrderDetails[]> {
     return this.fetch(`/order/pair/${pair}`, {}, params)
   }
 }
