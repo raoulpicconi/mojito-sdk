@@ -355,6 +355,80 @@ export interface BlockReward {
   outputs: TransactionOutput[]
 }
 
+export interface TransactionDetail {
+  block_id: string
+  confirmations: string
+  fee: {
+    atoms: string
+    decimal: string
+  }
+  flags: number
+  id: string
+  inputs: {
+    input: {
+      index: number
+      input_type: string
+      source_id: string
+      source_type: string
+      order_id?: string
+      command?: string
+      token_id?: string
+      amount?: {
+        atoms: string
+        decimal: string
+      }
+    }
+    utxo: {
+      destination: string
+      type: string
+      value: {
+        amount: {
+          atoms: string
+          decimal: string
+        }
+        type: string
+        token_id?: string
+      }
+    }
+  }[]
+  is_replaceable: boolean
+  outputs: {
+    destination?: string
+    type: string
+    value?: {
+      amount: {
+        atoms: string
+        decimal: string
+      }
+      type: string
+      token_id?: string
+    }
+    token_ticker?: {
+      hex: string
+      string: string
+    }
+    token_id?: string
+    pool_id?: string
+    order_id?: string
+    authority?: string
+    is_freezable?: boolean
+    metadata_uri?: {
+      hex: string
+      string: string
+    }
+    number_of_decimals?: number
+    total_supply?: {
+      type: string
+      content?: {
+        atoms: string
+        decimal: string
+      }
+    }
+  }[]
+  timestamp: string
+  version_byte: number
+}
+
 export interface Transaction {
   id: string
   inputs: TransactionInput[]

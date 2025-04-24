@@ -15,6 +15,7 @@ import {
   TimeFilter,
   Amount,
   TokenDetails,
+  TransactionDetail,
 } from "./types"
 
 /**
@@ -181,7 +182,7 @@ export class MintlayerAPIClient {
    * @param id - The transaction ID to query
    * @returns Promise resolving to the transaction information
    */
-  async getTransaction(id: string): Promise<Transaction> {
+  async getTransaction(id: string): Promise<TransactionDetail> {
     return this.fetch(`/transaction/${id}`)
   }
 
