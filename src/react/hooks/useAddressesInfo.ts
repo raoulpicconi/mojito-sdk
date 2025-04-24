@@ -4,7 +4,7 @@ import { useApiClient } from "./useApiClient"
 import { MintlayerAPIClient } from "../../api"
 import { MintlayerApiClientNotFoundError } from "../errors"
 
-export interface UseAddressInfoParams {
+export interface UseAddressesInfoParams {
   addresses: string[]
 }
 
@@ -25,7 +25,7 @@ type UseAddressInfoOptions = Omit<
  * @returns A query object containing the address information
  * @throws {MintlayerApiClientNotFoundError} If the API client is not initialized
  */
-export function useAddressesInfo(params: UseAddressInfoParams, options?: UseAddressInfoOptions) {
+export function useAddressesInfo(params: UseAddressesInfoParams, options?: UseAddressInfoOptions) {
   const { addresses } = params
   const { network } = useNetwork()
   const apiClient = useApiClient()
