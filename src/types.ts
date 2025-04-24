@@ -129,9 +129,7 @@ export interface SignTransactionParams {
   HEXRepresentation_unsigned?: any
 }
 
-export interface SignTransactionResponse {
-  signedTx: string
-}
+export type SignTransactionResponse = string
 
 export interface TransferParams {
   to: string
@@ -140,18 +138,14 @@ export interface TransferParams {
   number_of_decimals?: number
 }
 
-export interface TransferResponse {
-  txId: string
-}
+export type TransferResponse = SignTransactionResponse
 
 export interface DelegateParams {
   poolId: string
   amount: number
 }
 
-export interface DelegateResponse {
-  txId: string
-}
+export type DelegateResponse = SignTransactionResponse
 
 export interface IssueTokenParams {
   authority: string
@@ -163,9 +157,7 @@ export interface IssueTokenParams {
   supply_amount?: number
 }
 
-export interface IssueTokenResponse {
-  tokenId: string
-}
+export type IssueTokenResponse = SignTransactionResponse
 
 export interface MintTokenParams {
   destination: string
@@ -178,9 +170,7 @@ export interface MintTokenParams {
   }
 }
 
-export interface MintTokenResponse {
-  txId: string
-}
+export type MintTokenResponse = SignTransactionResponse
 
 export interface UnmintTokenParams {
   amount: number
@@ -192,9 +182,7 @@ export interface UnmintTokenParams {
   }
 }
 
-export interface UnmintTokenResponse {
-  txId: string
-}
+export type UnmintTokenResponse = SignTransactionResponse
 
 export interface LockTokenSupplyParams {
   token_id: string
@@ -204,9 +192,7 @@ export interface LockTokenSupplyParams {
   }
 }
 
-export interface LockTokenSupplyResponse {
-  txId: string
-}
+export type LockTokenSupplyResponse = SignTransactionResponse
 
 export interface ChangeTokenAuthorityParams {
   token_id: string
@@ -217,9 +203,7 @@ export interface ChangeTokenAuthorityParams {
   }
 }
 
-export interface ChangeTokenAuthorityResponse {
-  txId: string
-}
+export type ChangeTokenAuthorityResponse = SignTransactionResponse
 
 export interface ChangeMetadataUriParams {
   token_id: string
@@ -230,9 +214,7 @@ export interface ChangeMetadataUriParams {
   }
 }
 
-export interface ChangeMetadataUriResponse {
-  txId: string
-}
+export type ChangeMetadataUriResponse = SignTransactionResponse
 
 export interface CreateOrderParams {
   ask_amount: number
@@ -242,9 +224,7 @@ export interface CreateOrderParams {
   conclude_destination: string
 }
 
-export interface CreateOrderResponse {
-  orderId: string
-}
+export type CreateOrderResponse = SignTransactionResponse
 
 export interface FillOrderParams {
   order_id: string
@@ -255,9 +235,7 @@ export interface FillOrderParams {
   }
 }
 
-export interface FillOrderResponse {
-  txId: string
-}
+export type FillOrderResponse = SignTransactionResponse
 
 export interface Order {
   order_id: string
@@ -272,9 +250,7 @@ export interface ConcludeOrderParams {
   order_id: string
 }
 
-export interface ConcludeOrderResponse {
-  txId: string
-}
+export type ConcludeOrderResponse = SignTransactionResponse
 
 export interface BridgeParams {
   destination: string
@@ -283,9 +259,7 @@ export interface BridgeParams {
   intent: string
 }
 
-export interface BridgeResponse {
-  txId: string
-}
+export type BridgeResponse = SignTransactionResponse
 
 export interface GetXPubResponse {
   xpub: string
@@ -299,12 +273,10 @@ export interface FetchOrderDetailsResponse {
   order: Order
 }
 
-export interface BroadcastTxParams {
-  tx: string
-}
+export type BroadcastTxParams = string
 
 export interface BroadcastTxResponse {
-  txId: string
+  tx_id: string
 }
 
 export interface BurnParams {
@@ -315,9 +287,7 @@ export interface BurnParams {
   }
 }
 
-export interface BurnResponse {
-  txId: string
-}
+export type BurnResponse = SignTransactionResponse
 
 export interface FreezeTokenParams {
   token_id: string
@@ -328,9 +298,7 @@ export interface FreezeTokenParams {
   }
 }
 
-export interface FreezeTokenResponse {
-  txId: string
-}
+export type FreezeTokenResponse = SignTransactionResponse
 
 export interface UnfreezeTokenParams {
   token_id: string
@@ -340,17 +308,13 @@ export interface UnfreezeTokenParams {
   }
 }
 
-export interface UnfreezeTokenResponse {
-  txId: string
-}
+export type UnfreezeTokenResponse = SignTransactionResponse
 
 export interface DataDepositParams {
   data: any
 }
 
-export interface DataDepositResponse {
-  txId: string
-}
+export type DataDepositResponse = SignTransactionResponse
 
 export type BlockHeight = number
 export type BlockTimestamp = number

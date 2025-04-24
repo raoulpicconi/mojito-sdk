@@ -17,9 +17,10 @@ export function useIssueToken() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: IssueTokenParams) => {
+    mutationFn: async (params: IssueTokenParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.issueToken(params)
+      const response = await client.issueToken(params)
+      return client.broadcastTx(response)
     },
     onSuccess: () => {
       const address = accountData?.isConnected ? accountData?.address : null

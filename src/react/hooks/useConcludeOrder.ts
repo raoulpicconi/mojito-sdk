@@ -17,9 +17,10 @@ export function useConcludeOrder() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: ConcludeOrderParams) => {
+    mutationFn: async (params: ConcludeOrderParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.concludeOrder(params)
+      const response = await client.concludeOrder(params)
+      return client.broadcastTx(response)
     },
     onSuccess: () => {
       const address = accountData?.isConnected ? accountData?.address : null

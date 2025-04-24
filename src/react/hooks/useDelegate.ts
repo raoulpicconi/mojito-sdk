@@ -17,9 +17,10 @@ export function useDelegate() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: DelegateParams) => {
+    mutationFn: async (params: DelegateParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.delegate(params)
+      const response = await client.delegate(params)
+      return client.broadcastTx(response)
     },
     onSuccess: () => {
       const address = accountData?.isConnected ? accountData?.address : null

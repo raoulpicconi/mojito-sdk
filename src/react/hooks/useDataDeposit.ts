@@ -17,9 +17,10 @@ export function useDataDeposit() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (data: DataDepositParams) => {
+    mutationFn: async (data: DataDepositParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.dataDeposit(data)
+      const response = await client.dataDeposit(data)
+      return client.broadcastTx(response)
     },
     onSuccess: () => {
       const address = accountData?.isConnected ? accountData?.address : null

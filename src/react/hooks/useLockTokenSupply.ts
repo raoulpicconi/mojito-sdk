@@ -17,9 +17,10 @@ export function useLockTokenSupply() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: LockTokenSupplyParams) => {
+    mutationFn: async (params: LockTokenSupplyParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.lockTokenSupply(params)
+      const response = await client.lockTokenSupply(params)
+      return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
       const address = accountData?.isConnected ? accountData?.address : null

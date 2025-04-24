@@ -17,9 +17,10 @@ export function useUnmintToken() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: UnmintTokenParams) => {
+    mutationFn: async (params: UnmintTokenParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.unmintToken(params)
+      const response = await client.unmintToken(params)
+      return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
       const address = accountData?.isConnected ? accountData?.address : null

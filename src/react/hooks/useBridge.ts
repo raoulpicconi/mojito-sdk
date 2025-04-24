@@ -17,9 +17,10 @@ export function useBridge() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: BridgeParams) => {
+    mutationFn: async (params: BridgeParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.bridgeRequest(params)
+      const response = await client.bridgeRequest(params)
+      return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
       const address = accountData?.isConnected ? accountData?.address : null

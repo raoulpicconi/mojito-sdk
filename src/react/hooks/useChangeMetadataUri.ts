@@ -15,9 +15,10 @@ export function useChangeMetadataUri() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: ChangeMetadataUriParams) => {
+    mutationFn: async (params: ChangeMetadataUriParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.changeMetadataUri(params)
+      const response = await client.changeMetadataUri(params)
+      return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", network, variables.token_id] })

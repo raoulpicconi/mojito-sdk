@@ -17,9 +17,10 @@ export function useCreateOrder() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: CreateOrderParams) => {
+    mutationFn: async (params: CreateOrderParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.createOrder(params)
+      const response = await client.createOrder(params)
+      return client.broadcastTx(response)
     },
     onSuccess: () => {
       const address = accountData?.isConnected ? accountData?.address : null

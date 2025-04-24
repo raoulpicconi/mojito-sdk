@@ -17,9 +17,10 @@ export function useBurnToken() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: BurnParams) => {
+    mutationFn: async (params: BurnParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.burn(params)
+      const response = await client.burn(params)
+      return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
       const address = accountData?.isConnected ? accountData?.address : null

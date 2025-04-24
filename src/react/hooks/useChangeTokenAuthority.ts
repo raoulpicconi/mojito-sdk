@@ -17,9 +17,10 @@ export function useChangeTokenAuthority() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: ChangeTokenAuthorityParams) => {
+    mutationFn: async (params: ChangeTokenAuthorityParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.changeTokenAuthority(params)
+      const response = await client.changeTokenAuthority(params)
+      return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
       const currentAddress = accountData?.isConnected ? accountData?.address : null

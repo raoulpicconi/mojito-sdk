@@ -17,9 +17,10 @@ export function useTransfer() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: TransferParams) => {
+    mutationFn: async (params: TransferParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.transfer(params)
+      const response = await client.transfer(params)
+      return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
       const senderAddress = accountData?.isConnected ? accountData?.address : null

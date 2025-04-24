@@ -17,9 +17,10 @@ export function useUnfreezeToken() {
   const { network } = useNetwork()
 
   return useMutation({
-    mutationFn: (params: UnfreezeTokenParams) => {
+    mutationFn: async (params: UnfreezeTokenParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.unfreezeToken(params)
+      const response = await client.unfreezeToken(params)
+      return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
       const address = accountData?.isConnected ? accountData?.address : null
