@@ -206,7 +206,21 @@ export class MintlayerAPIClient {
    * @returns Promise resolving to the address information
    */
   async getAddress(address: string): Promise<AddressInfo> {
-    return this.fetch(`/address/${address}`)
+    let res: AddressInfo
+    try {
+      res = await this.fetch(`/address/${address}`)
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("404")) {
+        return {
+          coin_balance: "0",
+          locked_coin_balance: "0",
+          transaction_history: [],
+          tokens: [],
+        }
+      }
+      throw error
+    }
+    return res
   }
 
   /**
