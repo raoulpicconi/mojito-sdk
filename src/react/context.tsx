@@ -69,6 +69,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       if (window?.mintlayer?.isMintlayer) {
         client.current = window.mintlayer
         setState((prev) => ({ ...prev, isExtensionInstalled: true }))
+        setNetwork(state.network || "mainnet")
 
         if (autoConnect) {
           const res = await client.current.request<CheckConnectionResponse>({ method: "checkConnection" })
