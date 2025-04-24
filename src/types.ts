@@ -28,13 +28,12 @@ export interface MintlayerClient {
   changeMetadataUri: (params: ChangeMetadataUriParams) => Promise<ChangeMetadataUriResponse>
   createOrder: (params: CreateOrderParams) => Promise<CreateOrderResponse>
   fillOrder: (params: FillOrderParams) => Promise<FillOrderResponse>
-  getAccountOrders: () => Promise<Order[]>
+  getAccountOrders: () => Promise<OrderDetails[]>
   concludeOrder: (params: ConcludeOrderParams) => Promise<ConcludeOrderResponse>
   bridgeRequest: (params: BridgeParams) => Promise<BridgeResponse>
   getXPub: () => Promise<GetXPubResponse>
   on: (eventName: string, callback: (data: any) => void) => void
-  getAvailableOrders: () => Promise<Order[]>
-  fetchOrderDetails: (params: FetchOrderDetailsParams) => Promise<FetchOrderDetailsResponse>
+  getAvailableOrders: () => Promise<OrderDetails[]>
   broadcastTx: (params: BroadcastTxParams) => Promise<BroadcastTxResponse>
   burn: (params: BurnParams) => Promise<BurnResponse>
   freezeToken: (params: FreezeTokenParams) => Promise<FreezeTokenResponse>
@@ -237,15 +236,6 @@ export interface FillOrderParams {
 
 export type FillOrderResponse = SignTransactionResponse
 
-export interface Order {
-  order_id: string
-  ask_currency: string | { token_id: string }
-  give_currency: string | { token_id: string }
-  ask_amount: number
-  give_amount: number
-  conclude_destination: string
-}
-
 export interface ConcludeOrderParams {
   order_id: string
 }
@@ -270,7 +260,7 @@ export interface FetchOrderDetailsParams {
 }
 
 export interface FetchOrderDetailsResponse {
-  order: Order
+  order: OrderDetails
 }
 
 export type BroadcastTxParams = string
