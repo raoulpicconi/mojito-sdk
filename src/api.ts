@@ -10,11 +10,11 @@ import {
   UtxoOutPoint,
   DelegationInfo,
   PoolInfo,
-  TokenInfo,
   NFTInfo,
   OrderInfo,
   TimeFilter,
   Amount,
+  TokenDetails,
 } from "./types"
 
 /**
@@ -310,7 +310,7 @@ export class MintlayerAPIClient {
    * @param id - The token ID to query
    * @returns Promise resolving to the token information
    */
-  async getToken(id: string): Promise<TokenInfo> {
+  async getToken(id: string): Promise<TokenDetails> {
     return this.fetch(`/token/${id}`)
   }
 

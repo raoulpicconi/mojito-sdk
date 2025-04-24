@@ -447,17 +447,29 @@ export interface DelegationInfo {
   creation_block_height: BlockHeight
 }
 
-export interface TokenInfo {
+export interface TokenDetails {
+  token_ticker: {
+    string: string
+    hex: string
+  }
+  token_id: string
+  pool_id: string
+  order_id: string
   authority: string
+  is_token_freezable: boolean
   is_locked: boolean
-  circulating_supply: Amount
-  token_ticker: string
-  metadata_uri: string
-  number_of_decimals: number
-  total_supply: Amount
   frozen: boolean
-  is_token_unfreezable?: boolean
-  is_token_freezable?: boolean
+  next_nonce: number
+  metadata_uri: {
+    hex: string
+    string: string
+  }
+  number_of_decimals: number
+  circulating_supply: {
+    atoms: string
+    decimal: string
+  }
+  total_supply: "Unlimited" | { Fixed: { atoms: string } }
 }
 
 export interface NFTInfo {
