@@ -1,6 +1,7 @@
 export * from "./useAccount"
 export * from "./useAccountOrders"
 export * from "./useAddressDelegations"
+export * from "./useAddressesTokenAuthority"
 export * from "./useAddressInfo"
 export * from "./useAddressTokenAuthority"
 export * from "./useAddressUtxos"
