@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
-import { BuildTransactionParams } from "../../index.d"
+import { BuildTransactionParams } from "../../types"
 
 /**
  * Hook for building a new transaction

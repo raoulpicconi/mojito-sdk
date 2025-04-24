@@ -3,7 +3,7 @@
 import { localStorageService } from "../storage"
 import { MintlayerConfig, MintlayerState } from "./types"
 import React, { createContext, ReactNode, useMemo, useState, useEffect, useCallback, useRef } from "react"
-import { CheckConnectionResponse, MintlayerClient, Network } from "../index.d"
+import { CheckConnectionResponse, MintlayerClient, Network } from "../types"
 import { MintlayerAPIClient } from "../api"
 import { isValidUrl, normalizeUrl } from "../utils"
 

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
-import { BroadcastTxParams } from "../../index.d"
+import { BroadcastTxParams } from "../../types"
 
 /**
  * Hook for broadcasting a transaction to the network

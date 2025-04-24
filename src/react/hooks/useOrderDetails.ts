@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
-import { MintlayerClient } from "../../index.d"
+import { MintlayerClient } from "../../types"
 
 export interface UseOrderDetailsParams {
   order_id: string

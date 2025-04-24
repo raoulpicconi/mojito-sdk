@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
-import { LockTokenSupplyParams } from "../../index.d"
+import { LockTokenSupplyParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
 

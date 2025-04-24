@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
-import { FillOrderParams } from "../../index.d"
+import { FillOrderParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
 

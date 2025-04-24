@@ -2,7 +2,7 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
-import { MintlayerClient } from "../../index.d"
+import { MintlayerClient } from "../../types"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseDelegationTotalOptions = Omit<

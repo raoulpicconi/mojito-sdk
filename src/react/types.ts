@@ -1,4 +1,4 @@
-import type { Network } from "../index.d"
+import type { Network } from "../types"
 
 export interface Storage {
   getItem: (key: string) => string | null

@@ -11,11 +11,6 @@
       "types": "./types/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
-    },
-    "./react": {
-      "types": "./types/react/types.ts",
-      "import": "./dist/react/index.mjs",
-      "require": "./dist/react/index.cjs"
     }
   },
   "files": [

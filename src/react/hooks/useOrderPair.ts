@@ -3,7 +3,7 @@ import { useNetwork } from "./useNetwork"
 import { useApiClient } from "./useApiClient"
 import { MintlayerAPIClient } from "../../api"
 import { MintlayerApiClientNotFoundError } from "../errors"
-import { PaginationParams } from "../../index.d"
+import { PaginationParams } from "../../types"
 
 export interface UseOrderPairParams {
   pair: string

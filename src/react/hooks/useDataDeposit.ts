@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useClient } from "./useClient"
-import { DataDepositParams } from "../../index.d"
+import { DataDepositParams } from "../../types"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"

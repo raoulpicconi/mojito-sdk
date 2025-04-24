@@ -3,7 +3,7 @@ import { useNetwork } from "./useNetwork"
 import { useApiClient } from "./useApiClient"
 import { MintlayerAPIClient } from "../../api"
 import { MintlayerApiClientNotFoundError } from "../errors"
-import { TimeFilter } from "../../index.d"
+import { TimeFilter } from "../../types"
 
 export interface UsePoolBlockStatsParams {
   poolId: string

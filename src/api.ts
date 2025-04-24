@@ -15,7 +15,7 @@ import {
   OrderInfo,
   TimeFilter,
   Amount,
-} from "./index.d"
+} from "./types"
 
 /**
  * Client for interacting with the Mintlayer API
