@@ -27,13 +27,13 @@ export function useSubmitTransaction() {
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
 
       if (address) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokens-owned", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, address] })
         queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "account-orders", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "available-orders", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegations", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegation-total", address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "accountOrders", network, address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "availableOrders", network, address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegations", network, address] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegationsTotal", network, address] })
       }
     },
   })

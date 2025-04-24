@@ -4,6 +4,7 @@ import { MintlayerClientNotFoundError } from "../errors"
 import { DelegateParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 /**
  * Hook for creating a new delegation
@@ -23,14 +24,16 @@ export function useDelegate() {
       return client.broadcastTx(response)
     },
     onSuccess: () => {
-      const address = accountData?.isConnected ? accountData?.address : null
+      const addressesHash = getAddressesHash(
+        accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
+      )
 
-      if (address) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegations", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegationsTotal", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+      if (addressesHash) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegations", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "delegationsTotal", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
       }
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
     },
   })

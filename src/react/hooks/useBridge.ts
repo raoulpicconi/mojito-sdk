@@ -4,6 +4,7 @@ import { MintlayerClientNotFoundError } from "../errors"
 import { BridgeParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 /**
  * Hook for performing bridge operations
@@ -23,14 +24,17 @@ export function useBridge() {
       return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
-      const address = accountData?.isConnected ? accountData?.address : null
+      const addressesHash = getAddressesHash(
+        accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
+      )
 
       // Invalidate balance, tokens, address info, and transactions
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
-      if (address) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokens-owned", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
+
+      if (addressesHash) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
       }
 
       // Also invalidate specific token info if token_id was provided

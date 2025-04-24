@@ -4,6 +4,7 @@ import { useClient } from "./useClient"
 import { IssueTokenParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 /**
  * Hook for issuing new tokens
@@ -23,14 +24,15 @@ export function useIssueToken() {
       return client.broadcastTx(response)
     },
     onSuccess: () => {
-      const address = accountData?.isConnected ? accountData?.address : null
+      const addressesHash = getAddressesHash(
+        accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
+      )
 
       // Invalidate token lists, transactions, balance, and address info
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokenIds", network] })
-      if (address) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokens-owned", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+      if (addressesHash) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
       }
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
     },

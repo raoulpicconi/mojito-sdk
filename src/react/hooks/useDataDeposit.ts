@@ -4,6 +4,7 @@ import { DataDepositParams } from "../../types"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 /**
  * Hook for performing data deposit operations
@@ -23,13 +24,15 @@ export function useDataDeposit() {
       return client.broadcastTx(response)
     },
     onSuccess: () => {
-      const address = accountData?.isConnected ? accountData?.address : null
+      const addressesHash = getAddressesHash(
+        accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
+      )
 
       // Invalidate transactions and potentially balance/address info
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
-      if (address) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
+      if (addressesHash) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
       }
     },
   })

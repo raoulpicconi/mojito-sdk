@@ -3,6 +3,8 @@ import { MintlayerClientNotFoundError } from "../errors"
 import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
 import { MintlayerClient } from "../../types"
+import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseDelegationTotalOptions = Omit<
@@ -22,15 +24,16 @@ type UseDelegationTotalOptions = Omit<
 export function useDelegationTotal(options?: UseDelegationTotalOptions) {
   const client = useClient()
   const { data } = useAccount()
+  const { network } = useNetwork()
+  const addressesHash = getAddressesHash(data?.isConnected ? data?.address[network || "mainnet"] : null)
 
   return useQuery({
-    queryKey: ["mintlayer", "delegationsTotal", data?.isConnected ? data?.address : null],
+    queryKey: ["mintlayer", "delegationsTotal", network, addressesHash],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getDelegationsTotal()
     },
     enabled: data?.isConnected,
-    // Spread the additional options, allowing override of 'enabled'
     ...options,
   })
 }

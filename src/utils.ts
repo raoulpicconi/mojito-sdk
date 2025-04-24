@@ -1,3 +1,6 @@
+import { createHash } from "crypto"
+import { AddressData } from "./types"
+
 /**
  * Performs a deep equality comparison between two values
  * @param a - First value to compare
@@ -61,4 +64,16 @@ export function normalizeUrl(url: string): string {
 
   const normalized = url.endsWith("/") ? url.slice(0, -1) : url
   return normalized
+}
+
+/**
+ * Generates a hash of the addresses in the AccountAddresses object
+ * @param address - The AccountAddresses object to hash
+ * @returns A promise that resolves to the hash of the addresses
+ */
+export function getAddressesHash(address: AddressData | null): string {
+  if (!address) return ""
+  return createHash("sha256")
+    .update(new TextEncoder().encode(JSON.stringify(Object.values(address).flat())))
+    .digest("hex")
 }

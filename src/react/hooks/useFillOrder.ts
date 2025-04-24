@@ -4,6 +4,7 @@ import { MintlayerClientNotFoundError } from "../errors"
 import { FillOrderParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 /**
  * Hook for filling an existing order
@@ -23,14 +24,16 @@ export function useFillOrder() {
       return client.broadcastTx(response)
     },
     onSuccess: () => {
-      const address = accountData?.isConnected ? accountData?.address : null
-      if (address) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "accountOrders", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "availableOrders", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+      const addressesHash = getAddressesHash(
+        accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
+      )
+      if (addressesHash) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "accountOrders", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "availableOrders", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
       }
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
     },
   })

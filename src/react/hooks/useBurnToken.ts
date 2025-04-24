@@ -4,6 +4,7 @@ import { useClient } from "./useClient"
 import { BurnParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 /**
  * Hook for burning tokens
@@ -23,14 +24,16 @@ export function useBurnToken() {
       return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
-      const address = accountData?.isConnected ? accountData?.address : null
+      const addressesHash = getAddressesHash(
+        accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
+      )
 
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", network, variables.token_id] })
-      if (address) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", address] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, address] })
+      if (addressesHash) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
       }
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
     },
   })

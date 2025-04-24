@@ -4,6 +4,7 @@ import { useClient } from "./useClient"
 import { ChangeTokenAuthorityParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 /**
  * Hook for changing a token's authority
@@ -23,19 +24,18 @@ export function useChangeTokenAuthority() {
       return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
-      const currentAddress = accountData?.isConnected ? accountData?.address : null
+      const addressesHash = getAddressesHash(
+        accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
+      )
 
       // Invalidate specific token info
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", network, variables.token_id] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
 
       // Invalidate address info for old and new authority
-      if (currentAddress) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, currentAddress] })
+      if (addressesHash) {
         // Invalidate tokens owned by current user just in case authority implies ownership
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", currentAddress] })
-      }
-      if (variables.new_authority) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, variables.new_authority] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
       }
 
       // Invalidate general transactions

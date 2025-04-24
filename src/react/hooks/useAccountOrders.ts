@@ -3,6 +3,8 @@ import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
 import { MintlayerClient } from "../../types"
+import { useNetwork } from "./useNetwork"
+import { getAddressesHash } from "../../utils"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseAccountOrdersOptions = Omit<
@@ -22,9 +24,12 @@ type UseAccountOrdersOptions = Omit<
 export function useAccountOrders(options?: UseAccountOrdersOptions) {
   const client = useClient()
   const { data } = useAccount()
+  const { network } = useNetwork()
+
+  const addressesHash = getAddressesHash(data?.isConnected ? data?.address[network || "mainnet"] : null)
 
   return useQuery({
-    queryKey: ["mintlayer", "accountOrders", data?.isConnected ? data?.address : null],
+    queryKey: ["mintlayer", "accountOrders", network, addressesHash],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getAccountOrders()

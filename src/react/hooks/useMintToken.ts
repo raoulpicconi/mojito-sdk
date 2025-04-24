@@ -4,7 +4,7 @@ import { useClient } from "./useClient"
 import { MintTokenParams } from "../../types"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
-
+import { getAddressesHash } from "../../utils"
 /**
  * Hook for minting new tokens
  * @returns A mutation object for minting tokens that can be used with React Query
@@ -23,23 +23,17 @@ export function useMintToken() {
       return client.broadcastTx(response)
     },
     onSuccess: (_, variables) => {
-      const currentUserAddress = accountData?.isConnected ? accountData?.address : null
-      const recipientAddress = variables.destination
+      const currentUserAddressesHash = getAddressesHash(
+        accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
+      )
 
       // Invalidate specific token info
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", network, variables.token_id] })
-
-      // Invalidate recipient's balance, tokens, and address info
-      if (recipientAddress) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", recipientAddress] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokens-owned", recipientAddress] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, recipientAddress] })
-      }
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
 
       // Invalidate current user's balance and address info (for fees etc.)
-      if (currentUserAddress) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", currentUserAddress] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network, currentUserAddress] })
+      if (currentUserAddressesHash) {
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, currentUserAddressesHash] })
       }
 
       // Invalidate general transactions
