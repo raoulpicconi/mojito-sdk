@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useClient } from "./useClient"
-import { MintlayerClientNotFoundError } from "../errors"
+import { MintlayerClientNotFoundError, MintlayerProviderNotFoundError } from "../errors"
 import { CheckConnectionResponse } from "../../types"
 import { MintlayerContext } from "../context"
 import { useContext } from "react"
@@ -13,15 +13,21 @@ import { useContext } from "react"
 export function useConnect() {
   const client = useClient()
   const queryClient = useQueryClient()
-  const setConnectionState = useContext(MintlayerContext)?.setConnectionState
+  const context = useContext(MintlayerContext)
+
+  if (!context) {
+    throw new MintlayerProviderNotFoundError()
+  }
+
+  const { storageService, storageKeys } = context
 
   return useMutation({
     mutationFn: async () => {
       if (!client) throw new MintlayerClientNotFoundError()
       const res = await client.request<CheckConnectionResponse>({ method: "checkConnection" })
 
+      storageService.setItem(storageKeys.connectionState, "connected")
       if (!res.isConnected) {
-        setConnectionState?.("connected")
         client.connect()
       }
 

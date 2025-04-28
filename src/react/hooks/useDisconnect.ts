@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useClient } from "./useClient"
-import { MintlayerClientNotFoundError } from "../errors"
+import { MintlayerProviderNotFoundError } from "../errors"
 import { useContext } from "react"
 import { MintlayerContext } from "../context"
 
@@ -10,21 +9,24 @@ import { MintlayerContext } from "../context"
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
 export function useDisconnect() {
-  const client = useClient()
   const queryClient = useQueryClient()
-  const setConnectionState = useContext(MintlayerContext)?.setConnectionState
+  const context = useContext(MintlayerContext)
+
+  if (!context) {
+    throw new MintlayerProviderNotFoundError()
+  }
+
+  const { storageService, storageKeys } = context
 
   return useMutation({
     mutationFn: () => {
-      if (!client) throw new MintlayerClientNotFoundError()
-      setConnectionState?.("disconnected")
-      client.disconnect()
+      storageService.setItem(storageKeys.connectionState, "disconnected")
 
-      // FIXME: This is a hack to ensure the connection state is updated, to be removed once disconnect is fixed
+      // FIXME: This is a hack to ensure the connection state is updated, to be removed once disconnect is implemented
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve(true)
-        }, 1000)
+        }, 100)
       })
     },
     onSuccess: () => {

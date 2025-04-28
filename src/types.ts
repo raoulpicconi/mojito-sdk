@@ -61,9 +61,13 @@ export interface GetNetworkResponse {
   network: Network
 }
 
-export interface CheckConnectionSuccess {
+export interface CheckConnectionSuccessPositive {
   isConnected: true
   address: AccountAddresses
+}
+
+export interface CheckConnectionSuccessNegative {
+  isConnected: false
 }
 
 export interface CheckConnectionError {
@@ -71,7 +75,10 @@ export interface CheckConnectionError {
   error: string
 }
 
-export type CheckConnectionResponse = CheckConnectionSuccess | CheckConnectionError
+export type CheckConnectionResponse =
+  | CheckConnectionSuccessPositive
+  | CheckConnectionSuccessNegative
+  | CheckConnectionError
 
 export interface RequestParams {
   method: string

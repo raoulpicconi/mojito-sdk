@@ -1,13 +1,11 @@
 "use client"
 
 import { localStorageService } from "../storage"
-import { MintlayerConfig, MintlayerState } from "./types"
+import { MintlayerConfig, MintlayerState, Storage, StorageKeys } from "./types"
 import React, { createContext, ReactNode, useMemo, useState, useEffect, useCallback, useRef } from "react"
 import { CheckConnectionResponse, MintlayerClient, Network } from "../types"
 import { MintlayerAPIClient } from "../api"
 import { isValidUrl, normalizeUrl } from "../utils"
-
-type ConnectionState = "connected" | "disconnected"
 
 interface MintlayerProviderProps {
   children: ReactNode
@@ -18,7 +16,8 @@ interface MintlayerContextValue {
   client: MintlayerClient | null
   state: MintlayerState
   setNetwork: (network: Network) => void
-  setConnectionState: (connectionState: ConnectionState) => void
+  storageService: Storage
+  storageKeys: StorageKeys
   apiClient: MintlayerAPIClient
 }
 
@@ -118,13 +117,6 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
     [storageService, storageKeys.network, client],
   )
 
-  const setConnectionState = useCallback(
-    (connectionState: ConnectionState) => {
-      storageService.setItem(storageKeys.connectionState, connectionState)
-    },
-    [storageService, storageKeys.connectionState],
-  )
-
   const apiClient = useMemo(() => {
     return new MintlayerAPIClient(state.apiServer)
   }, [state.apiServer])
@@ -134,10 +126,11 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       client: client.current,
       state,
       setNetwork,
-      setConnectionState,
+      storageService,
+      storageKeys,
       apiClient,
     }),
-    [client, state, setNetwork, setConnectionState, apiClient],
+    [client, state, setNetwork, apiClient, storageService, storageKeys],
   )
 
   return <MintlayerContext.Provider value={value}>{children}</MintlayerContext.Provider>
