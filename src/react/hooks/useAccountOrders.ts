@@ -4,7 +4,7 @@ import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
 import { MintlayerClient } from "../../types"
 import { useNetwork } from "./useNetwork"
-import { getAddressesHash } from "../../utils"
+import { useAddressesHash } from "./useAddressesHash"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseAccountOrdersOptions = Omit<
@@ -23,18 +23,19 @@ type UseAccountOrdersOptions = Omit<
  */
 export function useAccountOrders(options?: UseAccountOrdersOptions) {
   const client = useClient()
-  const { data } = useAccount()
+  const { data: accountData } = useAccount()
   const { network } = useNetwork()
+  const { data: addressesHash, isSuccess: isHashReady } = useAddressesHash()
 
-  const addressesHash = getAddressesHash(data?.isConnected ? data?.address[network || "mainnet"] : null)
+  const currentNetwork = network || "mainnet"
 
   return useQuery({
-    queryKey: ["mintlayer", "accountOrders", network, addressesHash],
+    queryKey: ["mintlayer", "accountOrders", currentNetwork, addressesHash],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getAccountOrders()
     },
-    enabled: data?.isConnected,
+    enabled: !!accountData?.isConnected && isHashReady && !!addressesHash,
     // Spread the additional options, allowing override of 'enabled'
     ...options,
   })

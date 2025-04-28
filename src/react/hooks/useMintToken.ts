@@ -22,22 +22,22 @@ export function useMintToken() {
       const response = await client.mintToken(params)
       return client.broadcastTx(response)
     },
-    onSuccess: (_, variables) => {
-      const currentUserAddressesHash = getAddressesHash(
+    onSuccess: async (_, variables) => {
+      const currentUserAddressesHash = await getAddressesHash(
         accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
       )
+      const currentNetwork = network || "mainnet"
 
-      // Invalidate specific token info
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", network, variables.token_id] })
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
-
-      // Invalidate current user's balance and address info (for fees etc.)
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", currentNetwork, variables.token_id] })
       if (currentUserAddressesHash) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, currentUserAddressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", currentNetwork, currentUserAddressesHash] })
+        queryClient.invalidateQueries({
+          queryKey: ["mintlayer", "tokensOwned", currentNetwork, currentUserAddressesHash],
+        })
       }
 
-      // Invalidate general transactions
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", currentNetwork] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", currentNetwork] })
     },
   })
 }

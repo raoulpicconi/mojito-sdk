@@ -22,17 +22,19 @@ export function useUnmintToken() {
       const response = await client.unmintToken(params)
       return client.broadcastTx(response)
     },
-    onSuccess: (_, variables) => {
-      const addressesHash = getAddressesHash(
+    onSuccess: async () => {
+      const addressesHash = await getAddressesHash(
         accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
       )
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", network, variables.token_id] })
+      const currentNetwork = network || "mainnet"
+
       if (addressesHash) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", currentNetwork, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", currentNetwork, addressesHash] })
       }
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
+
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", currentNetwork] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", currentNetwork] })
     },
   })
 }

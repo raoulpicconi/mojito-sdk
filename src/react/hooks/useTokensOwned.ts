@@ -2,8 +2,8 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
+import { useAddressesHash } from "./useAddressesHash"
 import { MintlayerClient } from "../../types"
-import { getAddressesHash } from "../../utils"
 import { useNetwork } from "./useNetwork"
 
 // Define the type for the options, excluding queryKey and queryFn
@@ -18,21 +18,24 @@ type UseTokensOwnedOptions = Omit<
 /**
  * Hook for fetching tokens owned by the current account
  * @param options - Optional useQuery options
- * @returns A query object containing the list of owned tokens
+ * @returns A query object containing the list of tokens owned
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
 export function useTokensOwned(options?: UseTokensOwnedOptions) {
   const client = useClient()
-  const { data } = useAccount()
+  const { data: accountData } = useAccount()
   const { network } = useNetwork()
-  const addressesHash = getAddressesHash(data?.isConnected ? data?.address[network || "mainnet"] : null)
+  const { data: addressesHash, isSuccess: isHashReady } = useAddressesHash()
+
+  const currentNetwork = network || "mainnet"
 
   return useQuery({
-    queryKey: ["mintlayer", "tokensOwned", network, addressesHash],
+    queryKey: ["mintlayer", "tokensOwned", currentNetwork, addressesHash],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getTokensOwned()
     },
+    enabled: !!accountData?.isConnected && isHashReady && !!addressesHash,
     ...options,
   })
 }

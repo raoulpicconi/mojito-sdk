@@ -1,13 +1,13 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query"
-import { MintlayerClientNotFoundError } from "../errors"
 import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
+import { MintlayerClientNotFoundError } from "../errors"
 import { MintlayerClient } from "../../types"
 import { useNetwork } from "./useNetwork"
-import { getAddressesHash } from "../../utils"
+import { useAddressesHash } from "./useAddressesHash"
 
 // Define the type for the options, excluding queryKey and queryFn
-type UseDelegationTotalOptions = Omit<
+type UseDelegationsTotalOptions = Omit<
   UseQueryOptions<
     Awaited<ReturnType<MintlayerClient["getDelegationsTotal"]>>,
     Error // Default error type, adjust if needed
@@ -16,24 +16,29 @@ type UseDelegationTotalOptions = Omit<
 >
 
 /**
- * Hook for fetching the total delegation amount for the current account
+ * Hook for fetching the total delegations for the current account
  * @param options - Optional useQuery options
- * @returns A query object containing the total delegation amount
+ * @returns A query object containing the total delegations
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
-export function useDelegationTotal(options?: UseDelegationTotalOptions) {
+export function useDelegationsTotal(options?: UseDelegationsTotalOptions) {
   const client = useClient()
-  const { data } = useAccount()
+  const { data: accountData } = useAccount()
   const { network } = useNetwork()
-  const addressesHash = getAddressesHash(data?.isConnected ? data?.address[network || "mainnet"] : null)
+  const { data: addressesHash, isSuccess: isHashReady } = useAddressesHash()
+
+  const currentNetwork = network || "mainnet"
 
   return useQuery({
-    queryKey: ["mintlayer", "delegationsTotal", network, addressesHash],
+    queryKey: ["mintlayer", "delegationsTotal", currentNetwork, addressesHash],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
+      if (!isHashReady || !addressesHash) {
+        return Promise.reject(new Error("Hash not ready"))
+      }
       return client.getDelegationsTotal()
     },
-    enabled: data?.isConnected,
+    enabled: !!accountData?.isConnected && isHashReady && !!addressesHash,
     ...options,
   })
 }

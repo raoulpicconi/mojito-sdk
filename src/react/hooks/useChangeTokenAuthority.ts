@@ -7,7 +7,7 @@ import { useNetwork } from "./useNetwork"
 import { getAddressesHash } from "../../utils"
 
 /**
- * Hook for changing a token's authority
+ * Hook for changing the authority of a token
  * @returns A mutation object for changing token authority that can be used with React Query
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
@@ -23,23 +23,20 @@ export function useChangeTokenAuthority() {
       const response = await client.changeTokenAuthority(params)
       return client.broadcastTx(response)
     },
-    onSuccess: (_, variables) => {
-      const addressesHash = getAddressesHash(
+    onSuccess: async (_, variables) => {
+      const addressesHash = await getAddressesHash(
         accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
       )
+      const currentNetwork = network || "mainnet"
 
-      // Invalidate specific token info
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", network, variables.token_id] })
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
-
-      // Invalidate address info for old and new authority
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "token", currentNetwork, variables.token_id] })
       if (addressesHash) {
-        // Invalidate tokens owned by current user just in case authority implies ownership
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", currentNetwork, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", currentNetwork, addressesHash] })
       }
 
-      // Invalidate general transactions
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", currentNetwork] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", currentNetwork] })
     },
   })
 }

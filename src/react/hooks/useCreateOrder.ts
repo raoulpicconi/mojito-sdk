@@ -23,19 +23,20 @@ export function useCreateOrder() {
       const response = await client.createOrder(params)
       return client.broadcastTx(response)
     },
-    onSuccess: () => {
-      const addressesHash = getAddressesHash(
+    onSuccess: async () => {
+      const addressesHash = await getAddressesHash(
         accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
       )
+      const currentNetwork = network || "mainnet"
 
       if (addressesHash) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "accountOrders", network, addressesHash] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "availableOrders", network, addressesHash] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "accountOrders", currentNetwork, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "availableOrders", currentNetwork, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", currentNetwork, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", currentNetwork, addressesHash] })
       }
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", network] })
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", currentNetwork] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", currentNetwork] })
     },
   })
 }

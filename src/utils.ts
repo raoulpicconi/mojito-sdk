@@ -1,4 +1,3 @@
-import { createHash } from "crypto"
 import { AddressData } from "./types"
 
 /**
@@ -71,9 +70,11 @@ export function normalizeUrl(url: string): string {
  * @param address - The AccountAddresses object to hash
  * @returns A promise that resolves to the hash of the addresses
  */
-export function getAddressesHash(address: AddressData | null): string {
+export async function getAddressesHash(address: AddressData | null): Promise<string> {
   if (!address) return ""
-  return createHash("sha256")
-    .update(new TextEncoder().encode(JSON.stringify(Object.values(address).flat())))
-    .digest("hex")
+  const data = new TextEncoder().encode(JSON.stringify(Object.values(address).flat()))
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+  return hashHex
 }

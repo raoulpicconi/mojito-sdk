@@ -1,10 +1,10 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query"
-import { MintlayerClientNotFoundError } from "../errors"
-import { useClient } from "./useClient"
 import { useAccount } from "./useAccount"
+import { useClient } from "./useClient"
+import { MintlayerClientNotFoundError } from "../errors"
 import { MintlayerClient } from "../../types"
 import { useNetwork } from "./useNetwork"
-import { getAddressesHash } from "../../utils"
+import { useAddressesHash } from "./useAddressesHash"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseAvailableOrdersOptions = Omit<
@@ -23,18 +23,19 @@ type UseAvailableOrdersOptions = Omit<
  */
 export function useAvailableOrders(options?: UseAvailableOrdersOptions) {
   const client = useClient()
-  const { data } = useAccount()
   const { network } = useNetwork()
+  const { data: addressesHash, isSuccess: isHashReady } = useAddressesHash()
+  const { data: accountData } = useAccount()
 
-  const addressesHash = getAddressesHash(data?.isConnected ? data?.address[network || "mainnet"] : null)
+  const currentNetwork = network || "mainnet"
 
   return useQuery({
-    queryKey: ["mintlayer", "availableOrders", network, addressesHash],
+    queryKey: ["mintlayer", "availableOrders", currentNetwork, addressesHash],
     queryFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return client.getAvailableOrders()
     },
-    enabled: data?.isConnected,
+    enabled: !!client && isHashReady,
     ...options,
   })
 }

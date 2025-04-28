@@ -7,7 +7,7 @@ import { useNetwork } from "./useNetwork"
 import { getAddressesHash } from "../../utils"
 
 /**
- * Hook for issuing new tokens
+ * Hook for issuing a new token
  * @returns A mutation object for issuing tokens that can be used with React Query
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
@@ -23,18 +23,19 @@ export function useIssueToken() {
       const response = await client.issueToken(params)
       return client.broadcastTx(response)
     },
-    onSuccess: () => {
-      const addressesHash = getAddressesHash(
+    onSuccess: async () => {
+      const addressesHash = await getAddressesHash(
         accountData?.isConnected ? accountData?.address[network || "mainnet"] : null,
       )
+      const currentNetwork = network || "mainnet"
 
-      // Invalidate token lists, transactions, balance, and address info
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokenIds", network] })
       if (addressesHash) {
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", network, addressesHash] })
-        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", network, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "balance", currentNetwork, addressesHash] })
+        queryClient.invalidateQueries({ queryKey: ["mintlayer", "tokensOwned", currentNetwork, addressesHash] })
       }
-      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", network] })
+
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "addressInfo", currentNetwork] })
+      queryClient.invalidateQueries({ queryKey: ["mintlayer", "transactions", currentNetwork] })
     },
   })
 }
