@@ -55,9 +55,7 @@ export interface AccountAddresses {
   testnet: AddressData
 }
 
-export interface SetNetworkParams {
-  network: Network
-}
+export type SetNetworkParams = Network
 
 export interface GetNetworkResponse {
   network: Network

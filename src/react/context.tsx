@@ -105,7 +105,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
   const setNetwork = useCallback(
     (network: Network) => {
       if (client.current) {
-        client.current.setNetwork({ network })
+        client.current.setNetwork(network)
       }
       setState((prev) => ({ ...prev, network }))
       storageService.setItem(storageKeys.network, network)
