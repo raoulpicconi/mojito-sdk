@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
+import { useContext } from "react"
+import { MintlayerContext } from "../context"
 
 /**
  * Hook for disconnecting the current account
@@ -10,10 +12,12 @@ import { MintlayerClientNotFoundError } from "../errors"
 export function useDisconnect() {
   const client = useClient()
   const queryClient = useQueryClient()
+  const setConnectionState = useContext(MintlayerContext)?.setConnectionState
 
   return useMutation({
     mutationFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
+      setConnectionState?.("disconnected")
       return client.disconnect()
     },
     onSuccess: () => {

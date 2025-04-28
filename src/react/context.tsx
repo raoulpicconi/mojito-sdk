@@ -7,6 +7,8 @@ import { CheckConnectionResponse, MintlayerClient, Network } from "../types"
 import { MintlayerAPIClient } from "../api"
 import { isValidUrl, normalizeUrl } from "../utils"
 
+type ConnectionState = "connected" | "disconnected"
+
 interface MintlayerProviderProps {
   children: ReactNode
   config: MintlayerConfig
@@ -16,6 +18,7 @@ interface MintlayerContextValue {
   client: MintlayerClient | null
   state: MintlayerState
   setNetwork: (network: Network) => void
+  setConnectionState: (connectionState: ConnectionState) => void
   apiClient: MintlayerAPIClient
 }
 
@@ -71,7 +74,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
         setState((prev) => ({ ...prev, isExtensionInstalled: true }))
         setNetwork(state.network || "mainnet")
 
-        if (autoConnect) {
+        if (autoConnect || storageService.getItem(storageKeys.connectionState) === "connected") {
           const res = await client.current.request<CheckConnectionResponse>({ method: "checkConnection" })
 
           if (!res.isConnected) {
@@ -110,7 +113,14 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       setState((prev) => ({ ...prev, network }))
       storageService.setItem(storageKeys.network, network)
     },
-    [client],
+    [storageService, storageKeys.network, client],
+  )
+
+  const setConnectionState = useCallback(
+    (connectionState: ConnectionState) => {
+      storageService.setItem(storageKeys.connectionState, connectionState)
+    },
+    [storageService, storageKeys.connectionState],
   )
 
   const apiClient = useMemo(() => {
@@ -122,9 +132,10 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       client: client.current,
       state,
       setNetwork,
+      setConnectionState,
       apiClient,
     }),
-    [client, state, setNetwork, apiClient],
+    [client, state, setNetwork, setConnectionState, apiClient],
   )
 
   return <MintlayerContext.Provider value={value}>{children}</MintlayerContext.Provider>
