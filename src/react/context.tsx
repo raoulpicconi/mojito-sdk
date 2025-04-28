@@ -74,7 +74,9 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
         setState((prev) => ({ ...prev, isExtensionInstalled: true }))
         setNetwork(state.network || "mainnet")
 
-        if (autoConnect || storageService.getItem(storageKeys.connectionState) === "connected") {
+        const isDisconnected = storageService.getItem(storageKeys.connectionState) === "disconnected"
+
+        if (autoConnect && !isDisconnected) {
           const res = await client.current.request<CheckConnectionResponse>({ method: "checkConnection" })
 
           if (!res.isConnected) {
