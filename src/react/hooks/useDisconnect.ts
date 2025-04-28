@@ -18,7 +18,14 @@ export function useDisconnect() {
     mutationFn: () => {
       if (!client) throw new MintlayerClientNotFoundError()
       setConnectionState?.("disconnected")
-      return client.disconnect()
+      client.disconnect()
+
+      // FIXME: This is a hack to ensure the connection state is updated, to be removed once disconnect is fixed
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true)
+        }, 1000)
+      })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "account"] })
