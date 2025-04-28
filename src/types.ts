@@ -307,6 +307,10 @@ export type DataDepositResponse = SignTransactionResponse
 export type BlockHeight = number
 export type BlockTimestamp = number
 export type Amount = string
+export type AmountWithAtoms = {
+  atoms: string
+  decimal: string
+}
 export type AccountNonce = number
 export type PerThousand = number
 
@@ -448,7 +452,7 @@ export interface AddressInfo {
 
 export interface TokenBalance {
   token_id: string
-  amount: Amount
+  amount: AmountWithAtoms
 }
 
 export interface PoolInfo {
