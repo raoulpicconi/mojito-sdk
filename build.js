@@ -22,27 +22,49 @@ const commonOptions = {
 // Build all formats of the library
 async function buildLibrary() {
   try {
-    // ESM Build
+    // ESM Build - Main
     await build({
       ...commonOptions,
       entryPoints: ["./src/index.ts"],
       outfile: "dist/index.mjs",
       format: "esm",
-      platform: "browser",
+      platform: "browser", // Keep as browser for potential isomorphic use, externals handle Node/React
       plugins: [nodeExternalsPlugin()],
     })
-    console.log("ESM build completed successfully.")
+    console.log("ESM build (main) completed successfully.")
 
-    // CJS Build
+    // ESM Build - Core
+    await build({
+      ...commonOptions,
+      entryPoints: ["./src/core.ts"],
+      outfile: "dist/core.mjs",
+      format: "esm",
+      platform: "browser", // Keep as browser for potential isomorphic use, externals handle Node/React
+      plugins: [nodeExternalsPlugin()],
+    })
+    console.log("ESM build (core) completed successfully.")
+
+    // CJS Build - Main
     await build({
       ...commonOptions,
       entryPoints: ["./src/index.ts"],
       outfile: "dist/index.cjs",
       format: "cjs",
-      platform: "browser",
+      platform: "browser", // Keep as browser for potential isomorphic use, externals handle Node/React
       plugins: [nodeExternalsPlugin()],
     })
-    console.log("CJS build completed successfully.")
+    console.log("CJS build (main) completed successfully.")
+
+    // CJS Build - Core
+    await build({
+      ...commonOptions,
+      entryPoints: ["./src/core.ts"],
+      outfile: "dist/core.cjs",
+      format: "cjs",
+      platform: "browser", // Keep as browser for potential isomorphic use, externals handle Node/React
+      plugins: [nodeExternalsPlugin()],
+    })
+    console.log("CJS build (core) completed successfully.")
 
     // UMD/IIFE Build for browsers
     await build({

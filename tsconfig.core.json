@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declarationDir": null,
+    "outFile": "./types/core.d.ts",
+    "module": "amd",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": ["src/core.ts"],
+  "exclude": ["src/react/**/*"]
+}

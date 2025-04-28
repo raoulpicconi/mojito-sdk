@@ -11,6 +11,21 @@
       "types": "./types/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
+    },
+    "./core": {
+      "types": "./types/core.d.ts",
+      "import": "./dist/core.mjs",
+      "require": "./dist/core.cjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./types/index.d.ts"
+      ],
+      "core": [
+        "./types/core.d.ts"
+      ]
     }
   },
   "files": [
@@ -19,9 +34,9 @@
     "README.md"
   ],
   "scripts": {
-    "build:types": "tsc --emitDeclarationOnly",
+    "build:types": "tsc -p tsconfig.json --emitDeclarationOnly && tsc -p tsconfig.core.json",
     "build:js": "node build.js",
-    "build": "npm run build:js && npm run build:types",
+    "build": "npm run build:types && npm run build:js",
     "prepublishOnly": "npm run build",
     "format": "prettier --write .",
     "docs": "typedoc --entryPointStrategy expand src"
