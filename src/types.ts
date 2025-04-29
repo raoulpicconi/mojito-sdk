@@ -494,6 +494,7 @@ export interface TokenDetails {
   order_id: string
   authority: string
   is_token_freezable: boolean
+  is_token_unfreezable: boolean
   is_locked: boolean
   frozen: boolean
   next_nonce: number
