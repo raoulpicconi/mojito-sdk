@@ -1,6 +1,6 @@
 {
   "name": "@raoul-picconi/mojito-sdk",
-  "version": "2.0.26",
+  "version": "2.0.27",
   "description": "Mojito wallet SDK",
   "type": "module",
   "main": "./dist/index.cjs",
