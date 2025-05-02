@@ -39,6 +39,7 @@ export interface MintlayerClient {
   freezeToken: (params: FreezeTokenParams) => Promise<FreezeTokenResponse>
   unfreezeToken: (params: UnfreezeTokenParams) => Promise<UnfreezeTokenResponse>
   dataDeposit: (params: DataDepositParams) => Promise<DataDepositResponse>
+  issueNft: (params: IssueNftParams) => Promise<IssueNftResponse>
 }
 
 export type Network = "mainnet" | "testnet"
@@ -546,3 +547,16 @@ export interface PaginationParams {
   offset?: number
   items?: number
 }
+
+export interface IssueNftParams {
+  ticker: string
+  name: string
+  description: string
+  creator: string
+  additional_metadata_uri: string
+  icon_uri: string
+  media_hash: string
+  media_uri: string
+}
+
+export type IssueNftResponse = SignTransactionResponse
