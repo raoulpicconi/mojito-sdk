@@ -7,11 +7,11 @@ import { getAddressesHash } from "../../utils"
 import { IssueNftParams } from "../../types"
 
 /**
- * Hook for issuing a new token
- * @returns A mutation object for issuing tokens that can be used with React Query
+ * Hook for issuing a new NFT
+ * @returns A mutation object for issuing NFTs that can be used with React Query
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
-export function useIssueToken() {
+export function useIssueNFT() {
   const client = useClient()
   const queryClient = useQueryClient()
   const { data: accountData } = useAccount()
