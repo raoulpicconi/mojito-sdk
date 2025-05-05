@@ -1,46 +1,4 @@
-declare global {
-  interface Window {
-    mintlayer?: MintlayerClient
-  }
-}
-
-export interface MintlayerClient {
-  isMintlayer: boolean
-  setNetwork: (params: SetNetworkParams) => void
-  getNetwork: () => GetNetworkResponse
-  connect: () => Promise<void>
-  disconnect: () => Promise<void>
-  request: <T = unknown>(params: RequestParams) => Promise<T>
-  getAddresses: () => Promise<string[]>
-  getBalance: () => Promise<number>
-  getDelegations: () => Promise<Delegation[]>
-  getTokensOwned: () => Promise<TokenAuthority[]>
-  getDelegationsTotal: () => Promise<number>
-  buildTransaction: (params: BuildTransactionParams) => Promise<BuildTransactionResponse>
-  signTransaction: (params: SignTransactionParams) => Promise<SignTransactionResponse>
-  transfer: (params: TransferParams) => Promise<TransferResponse>
-  delegate: (params: DelegateParams) => Promise<DelegateResponse>
-  issueToken: (params: IssueTokenParams) => Promise<IssueTokenResponse>
-  mintToken: (params: MintTokenParams) => Promise<MintTokenResponse>
-  unmintToken: (params: UnmintTokenParams) => Promise<UnmintTokenResponse>
-  lockTokenSupply: (params: LockTokenSupplyParams) => Promise<LockTokenSupplyResponse>
-  changeTokenAuthority: (params: ChangeTokenAuthorityParams) => Promise<ChangeTokenAuthorityResponse>
-  changeMetadataUri: (params: ChangeMetadataUriParams) => Promise<ChangeMetadataUriResponse>
-  createOrder: (params: CreateOrderParams) => Promise<CreateOrderResponse>
-  fillOrder: (params: FillOrderParams) => Promise<FillOrderResponse>
-  getAccountOrders: () => Promise<OrderDetails[]>
-  concludeOrder: (params: ConcludeOrderParams) => Promise<ConcludeOrderResponse>
-  bridgeRequest: (params: BridgeParams) => Promise<BridgeResponse>
-  getXPub: () => Promise<GetXPubResponse>
-  on: (eventName: string, callback: (data: any) => void) => void
-  getAvailableOrders: () => Promise<OrderDetails[]>
-  broadcastTx: (params: BroadcastTxParams) => Promise<BroadcastTxResponse>
-  burn: (params: BurnParams) => Promise<BurnResponse>
-  freezeToken: (params: FreezeTokenParams) => Promise<FreezeTokenResponse>
-  unfreezeToken: (params: UnfreezeTokenParams) => Promise<UnfreezeTokenResponse>
-  dataDeposit: (params: DataDepositParams) => Promise<DataDepositResponse>
-  issueNft: (params: IssueNftParams) => Promise<IssueNftResponse>
-}
+import { Client } from "@mintlayer/sdk"
 
 export type Network = "mainnet" | "testnet"
 
@@ -81,11 +39,6 @@ export type CheckConnectionResponse =
   | CheckConnectionSuccessNegative
   | CheckConnectionError
 
-export interface RequestParams {
-  method: string
-  params?: Record<string, any>
-}
-
 export interface Delegation {
   balance: {
     decimal: string
@@ -98,217 +51,84 @@ export interface TokenAuthority {
   [key: string]: any
 }
 
-export interface BuildTransactionParams {
-  type: TransactionType
-  params: Record<string, any>
-}
+export type BuildTransactionParams = Parameters<Client["buildTransaction"]>[0]
 
-export type TransactionType =
-  | "Transfer"
-  | "BurnToken"
-  | "IssueFungibleToken"
-  | "MintToken"
-  | "UnmintToken"
-  | "LockTokenSupply"
-  | "ChangeTokenAuthority"
-  | "ChangeMetadataUri"
-  | "FreezeToken"
-  | "UnfreezeToken"
-  | "DataDeposit"
-  | "CreateOrder"
-  | "ConcludeOrder"
-  | "FillOrder"
-
-export interface BuildTransactionResponse {
-  JSONRepresentation: {
-    inputs: any[]
-    outputs: any[]
-  }
-  BINRepresentation: any
-  HEXRepresentation_unsigned: any
-}
-
-export interface SignTransactionParams {
-  JSONRepresentation: any
-  BINRepresentation?: any
-  HEXRepresentation_unsigned?: any
-}
+export type SignTransactionParams = Parameters<Client["signTransaction"]>[0]
 
 export type SignTransactionResponse = string
 
-export interface TransferParams {
-  to: string
-  amount: number
-  token_id?: string
-  number_of_decimals?: number
-}
+export type TransferParams = Parameters<Client["transfer"]>[0]
 
 export type TransferResponse = SignTransactionResponse
 
-export interface DelegateParams {
-  poolId: string
-  amount: number
-}
+export type DelegateParams = Parameters<Client["delegate"]>[0]
 
 export type DelegateResponse = SignTransactionResponse
 
-export interface IssueTokenParams {
-  authority: string
-  is_freezable: boolean
-  metadata_uri: string
-  number_of_decimals: number
-  token_ticker: string
-  supply_type: "Unlimited" | "Lockable" | "Fixed"
-  supply_amount?: number
-}
+export type IssueTokenParams = Parameters<Client["issueToken"]>[0]
 
 export type IssueTokenResponse = SignTransactionResponse
 
-export interface MintTokenParams {
-  destination: string
-  amount: number
-  token_id: string
-  token_details: {
-    number_of_decimals: number
-    next_nonce: number
-    authority: string
-  }
-}
+export type MintTokenParams = Parameters<Client["mintToken"]>[0]
 
 export type MintTokenResponse = SignTransactionResponse
 
-export interface UnmintTokenParams {
-  amount: number
-  token_id: string
-  token_details: {
-    number_of_decimals: number
-    next_nonce: number
-    authority: string
-  }
-}
+export type UnmintTokenParams = Parameters<Client["unmintToken"]>[0]
 
 export type UnmintTokenResponse = SignTransactionResponse
 
-export interface LockTokenSupplyParams {
-  token_id: string
-  token_details: {
-    next_nonce: number
-    authority: string
-  }
-}
+export type LockTokenSupplyParams = Parameters<Client["lockTokenSupply"]>[0]
 
 export type LockTokenSupplyResponse = SignTransactionResponse
 
-export interface ChangeTokenAuthorityParams {
-  token_id: string
-  new_authority: string
-  token_details: {
-    next_nonce: number
-    authority: string
-  }
-}
+export type ChangeTokenAuthorityParams = Parameters<Client["changeTokenAuthority"]>[0]
 
 export type ChangeTokenAuthorityResponse = SignTransactionResponse
 
-export interface ChangeMetadataUriParams {
-  token_id: string
-  new_metadata_uri: string
-  token_details: {
-    next_nonce: number
-    authority: string
-  }
-}
+export type ChangeMetadataUriParams = Parameters<Client["changeMetadataUri"]>[0]
 
 export type ChangeMetadataUriResponse = SignTransactionResponse
 
-export interface CreateOrderParams {
-  ask_amount: number
-  ask_token: string
-  give_amount: number
-  give_token: string
-  conclude_destination: string
-}
+export type CreateOrderParams = Parameters<Client["createOrder"]>[0]
 
 export type CreateOrderResponse = SignTransactionResponse
 
-export interface FillOrderParams {
-  order_id: string
-  amount: number
-  destination: string
-  order_details: {
-    nonce: number
-  }
-}
+export type FillOrderParams = Parameters<Client["fillOrder"]>[0]
 
 export type FillOrderResponse = SignTransactionResponse
 
-export interface ConcludeOrderParams {
-  order_id: string
-}
+export type ConcludeOrderParams = Parameters<Client["concludeOrder"]>[0]
 
 export type ConcludeOrderResponse = SignTransactionResponse
 
-export interface BridgeParams {
-  destination: string
-  amount: number
-  token_id?: string
-  intent: string
-}
+export type BridgeParams = Parameters<Client["bridgeRequest"]>[0]
 
 export type BridgeResponse = SignTransactionResponse
 
 export interface GetXPubResponse {
   xpub: string
-}
-
-export interface FetchOrderDetailsParams {
-  order_id: string
-}
-
-export interface FetchOrderDetailsResponse {
   order: OrderDetails
 }
 
-export type BroadcastTxParams = string
+export type BroadcastTxParams = Parameters<Client["broadcastTx"]>[0]
 
 export interface BroadcastTxResponse {
   tx_id: string
 }
 
-export interface BurnParams {
-  token_id: string
-  amount: number
-  token_details?: {
-    number_of_decimals: number
-  }
-}
+export type BurnParams = Parameters<Client["burn"]>[0]
 
 export type BurnResponse = SignTransactionResponse
 
-export interface FreezeTokenParams {
-  token_id: string
-  is_unfreezable: boolean
-  token_details: {
-    next_nonce: number
-    authority: string
-  }
-}
+export type FreezeTokenParams = Parameters<Client["freezeToken"]>[0]
 
 export type FreezeTokenResponse = SignTransactionResponse
 
-export interface UnfreezeTokenParams {
-  token_id: string
-  token_details: {
-    next_nonce: number
-    authority: string
-  }
-}
+export type UnfreezeTokenParams = Parameters<Client["unfreezeToken"]>[0]
 
 export type UnfreezeTokenResponse = SignTransactionResponse
 
-export interface DataDepositParams {
-  data: any
-}
+export type DataDepositParams = Parameters<Client["dataDeposit"]>[0]
 
 export type DataDepositResponse = SignTransactionResponse
 
@@ -548,15 +368,6 @@ export interface PaginationParams {
   items?: number
 }
 
-export interface IssueNftParams {
-  ticker: string
-  name: string
-  description: string
-  creator: string
-  additional_metadata_uri: string
-  icon_uri: string
-  media_hash: string
-  media_uri: string
-}
+export type IssueNftParams = Parameters<Client["issueNft"]>[0]
 
 export type IssueNftResponse = SignTransactionResponse

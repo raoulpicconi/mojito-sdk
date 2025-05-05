@@ -3,9 +3,10 @@
 import { localStorageService } from "../storage"
 import { MintlayerConfig, MintlayerState, Storage, StorageKeys } from "./types"
 import React, { createContext, ReactNode, useMemo, useState, useEffect, useCallback, useRef } from "react"
-import { CheckConnectionResponse, MintlayerClient, Network } from "../types"
+import { Network } from "../types"
 import { MintlayerAPIClient } from "../api"
 import { isValidUrl, normalizeUrl } from "../utils"
+import { Client } from "@mintlayer/sdk"
 
 interface MintlayerProviderProps {
   children: ReactNode
@@ -13,7 +14,7 @@ interface MintlayerProviderProps {
 }
 
 interface MintlayerContextValue {
-  client: MintlayerClient | null
+  client: Client | null
   state: MintlayerState
   setNetwork: (network: Network) => void
   storageService: Storage
@@ -40,14 +41,12 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
 
   const storageService = storage ?? localStorageService
 
-  const client = useRef<MintlayerClient | null>(null)
+  const client = useRef<Client | null>(null)
   const pendingTimeout = useRef<NodeJS.Timeout | null>(null)
   const [state, setState] = useState<MintlayerState>(() => {
     const savedNetwork = storageService.getItem(storageKeys.network) as Network | null
 
     const network = savedNetwork || config.defaultNetwork || "mainnet"
-
-    const isExtensionInstalled = typeof window !== "undefined" && !!window.mintlayer?.isMintlayer
 
     let normalizedApiServer = apiServer
     if (isValidUrl(apiServer)) {
@@ -58,7 +57,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
 
     return {
       network,
-      isExtensionInstalled,
+      isExtensionInstalled: false,
       retryCount: 0,
       apiServer: normalizedApiServer,
     }
@@ -68,15 +67,16 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
     if (typeof window === "undefined") return
 
     const checkClient = async () => {
-      if (window?.mintlayer?.isMintlayer) {
-        client.current = window.mintlayer
+      const mintlayer = await Client.create({ network: state.network as "mainnet" | "testnet" })
+      if (mintlayer?.isMintlayer) {
+        client.current = mintlayer
         setState((prev) => ({ ...prev, isExtensionInstalled: true }))
         setNetwork(state.network || "mainnet")
 
         const isDisconnected = storageService.getItem(storageKeys.connectionState) === "disconnected"
 
         if (autoConnect && !isDisconnected) {
-          const res = await client.current.request<CheckConnectionResponse>({ method: "checkConnection" })
+          const res = await client.current.request({ method: "checkConnection" })
 
           if (!res.isConnected) {
             client.current.connect()

@@ -2,14 +2,14 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
-import { MintlayerClient } from "../../types"
+import { Client } from "@mintlayer/sdk"
 import { useNetwork } from "./useNetwork"
 import { useAddressesHash } from "./useAddressesHash"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseDelegationsTotalOptions = Omit<
   UseQueryOptions<
-    Awaited<ReturnType<MintlayerClient["getDelegationsTotal"]>>,
+    Awaited<ReturnType<Client["getDelegationsTotal"]>>,
     Error // Default error type, adjust if needed
   >,
   "queryKey" | "queryFn"

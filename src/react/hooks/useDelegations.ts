@@ -3,13 +3,13 @@ import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useAddressesHash } from "./useAddressesHash"
-import { MintlayerClient } from "../../types"
+import { Client } from "@mintlayer/sdk"
 import { useNetwork } from "./useNetwork"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseDelegationsOptions = Omit<
   UseQueryOptions<
-    Awaited<ReturnType<MintlayerClient["getDelegations"]>>,
+    Awaited<ReturnType<Client["getDelegations"]>>,
     Error // Default error type, adjust if needed
   >,
   "queryKey" | "queryFn"

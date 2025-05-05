@@ -48,7 +48,7 @@ export function useAccount(options?: UseAccountOptions) {
         } as CheckConnectionSuccessNegative
       }
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.request<CheckConnectionResponse>({ method: "checkConnection" })
+      return client.request({ method: "checkConnection" })
     },
     // Spread the additional options
     ...options,

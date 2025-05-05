@@ -2,14 +2,14 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
-import { MintlayerClient } from "../../types"
 import { useNetwork } from "./useNetwork"
 import { useAddressesHash } from "./useAddressesHash"
+import { Client } from "@mintlayer/sdk"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseAvailableOrdersOptions = Omit<
   UseQueryOptions<
-    Awaited<ReturnType<MintlayerClient["getAvailableOrders"]>>,
+    Awaited<ReturnType<Client["getAvailableOrders"]>>,
     Error // Default error type, adjust if needed
   >,
   "queryKey" | "queryFn"

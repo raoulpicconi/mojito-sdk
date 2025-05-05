@@ -24,7 +24,7 @@ export function useConnect() {
   return useMutation({
     mutationFn: async () => {
       if (!client) throw new MintlayerClientNotFoundError()
-      const res = await client.request<CheckConnectionResponse>({ method: "checkConnection" })
+      const res = await client.request({ method: "checkConnection" })
 
       storageService.setItem(storageKeys.connectionState, "connected")
       if (!res.isConnected) {

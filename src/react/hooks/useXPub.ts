@@ -2,12 +2,12 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
 import { useNetwork } from "./useNetwork"
-import { MintlayerClient } from "../../types"
+import { Client } from "@mintlayer/sdk"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseXPubOptions = Omit<
   UseQueryOptions<
-    Awaited<ReturnType<MintlayerClient["getXPub"]>>,
+    Awaited<ReturnType<Client["getXPub"]>>,
     Error // Default error type, adjust if needed
   >,
   "queryKey" | "queryFn"
