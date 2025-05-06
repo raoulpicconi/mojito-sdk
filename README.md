@@ -53,6 +53,26 @@ npm run build
 - `npm run build:types`: Generates TypeScript declaration files using `tsc`.
 - `npm run format`: Formats the code using Prettier.
 
+## Documentation
+
+This project uses [TypeDoc](https://typedoc.org/) to generate documentation from the TSDoc comments in the source code.
+
+### Building Documentation Locally
+
+To build the documentation locally, run the following command:
+
+```bash
+npm run docs
+```
+
+This will generate the static HTML documentation in the `docs/` directory at the root of the project. You can then open `docs/index.html` in your browser to view the documentation.
+
+### Automated Deployment to GitHub Pages
+
+The documentation is automatically built and deployed to GitHub Pages on every push to the `main` branch. This process is managed by the GitHub Actions workflow defined in `.github/workflows/gh-pages.yml`.
+
+The live documentation can be found at the GitHub Pages URL for this repository, which is typically in the format: `https://<your-username>.github.io/<repository-name>/` (you'll find the exact URL in your repository's "Settings" > "Pages" section after a successful deployment).
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
