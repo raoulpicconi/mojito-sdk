@@ -1,6 +1,6 @@
 # mojito-sdk
 
-[![npm version](https://badge.fury.io/js/%40mintlayer%2Fmojito-sdk.svg)](https://badge.fury.io/js/%40mintlayer%2Fmojito-sdk)
+[![npm version](https://badge.fury.io/js/%40raoul-picconi%2Fmojito-sdk.svg)](https://badge.fury.io/js/%40raoul-picconi%2Fmojito-sdk)
 
 > Mojito wallet SDK
 
@@ -11,27 +11,108 @@ This SDK provides functionalities to interact with the Mojito wallet, including 
 Install the package using npm:
 
 ```bash
-npm install @mintlayer/mojito-sdk @tanstack/react-query react react-dom
+npm install @raoul-picconi/mojito-sdk @tanstack/react-query react react-dom
 ```
 
 Or using yarn:
 
 ```bash
-yarn add @mintlayer/mojito-sdk @tanstack/react-query react react-dom
+yarn add @raoul-picconi/mojito-sdk @tanstack/react-query react react-dom
 ```
 
 **Note:** This package has peer dependencies on `@tanstack/react-query`, `react`, and `react-dom`. Ensure they are installed in your project.
 
 ## Usage
 
+Here are a couple of examples to get you started:
+
+### 1. Using a React Hook to query data (e.g., to display wallet balance)
+
+This example assumes you have a `MintlayerProvider` set up in your React application.
+
+```jsx
+import React from "react"
+import { useWalletBalance } from "@raoul-picconi/mojito-sdk"
+
+function WalletDisplay() {
+  const { data: balance, isLoading, error } = useBalance()
+
+  if (isLoading) return <p>Loading balance...</p>
+  if (error) return <p>Error fetching balance: {error.message}</p>
+
+  return (
+    <div>
+      <h2>Your Wallet Balance</h2>
+      <p>{balance ? `${balance.amount} ML` : "N/A"}</p>
+    </div>
+  )
+}
+
+export default WalletDisplay
+```
+
+### 2. Using a React Hook to perform a mutation (e.g., to send coins)
+
+This example assumes you have a `MintlayerProvider` set up in your React application.
+
+```jsx
+import React from "react"
+import { useTransfer } from "@raoul-picconi/mojito-sdk
+
+function Transfer() {
+  const { mutate: transfer, isPending, error } = useTransfer()
+
+  const [to, setTo] = useState(0)
+  const [amount, setAmount] = useState(0)
+
+  const handleToChange = (e) => {
+    setTo(e.target.value)
+  }
+
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value)
+  }
+
+  const handleSubmit = (e) => {
+    mutate({to, amount})
+  }
+
+  return (
+    <div>
+      <h2>Transfer</h2>
+
+      <form onSubmit={handleSubmit}>
+        <input type="string" value={to} onChange={handleToChange} />
+        <input type="number" value={amount} onChange={handleAmountChange} />
+        <button type="submit">Transfer</button>
+      </form>
+      {error && <p>An error occurred, please try again</p>}
+      {isPending && <p>Transferring {amount} ML to {to}...</p>}
+      {isSuccess && <p>Transfer complete!</p>}
+    </div>
+  )
+}
+
+export default Transfer
+```
+
+### 3. Using the Core Module
+
+This example demonstrates how you might use the core SDK, perhaps in a Node.js environment or a non-React part of your application.
+
 ```javascript
-// Example: Importing the SDK
-import { someFunction } from "@mintlayer/mojito-sdk"
+import { MintlayerAPIClient } from "@raoul-picconi/mojito-sdk/core"
 
-// Example: Using a React hook (if applicable)
-import { useMojitoHook } from "@mintlayer/mojito-sdk/react"
+async function getLatestBlockNumber() {
+  try {
+    const sdk = new MintlayerAPIClient(process.env.MINTLAYER_API_SERVER)
+    const { block_height, block_id } = await sdk.getChainTip()
 
-// ... your code here
+    return block_height
+  } catch (e) {
+    console.error(e)
+  }
+}
 ```
 
 ## Building
@@ -52,6 +133,7 @@ npm run build
 - `npm run build:js`: Runs the esbuild process via `build.js`.
 - `npm run build:types`: Generates TypeScript declaration files using `tsc`.
 - `npm run format`: Formats the code using Prettier.
+- `npm run docs`: Generates documentation in `docs` folder.
 
 ## Documentation
 
@@ -71,7 +153,17 @@ This will generate the static HTML documentation in the `docs/` directory at the
 
 The documentation is automatically built and deployed to GitHub Pages on every push to the `main` branch. This process is managed by the GitHub Actions workflow defined in `.github/workflows/gh-pages.yml`.
 
-The live documentation can be found at the GitHub Pages URL for this repository, which is typically in the format: `https://<your-username>.github.io/<repository-name>/` (you'll find the exact URL in your repository's "Settings" > "Pages" section after a successful deployment).
+The live documentation can be found at: **[raoulpicconi.github.io/mojito-sdk](https://raoulpicconi.github.io/mojito-sdk/)**
+
+### Documentation Structure Overview
+
+The documentation is organized into several key areas to help you find the information you need:
+
+- **Modules**:
+  - [**Core Module**](https://raoulpicconi.github.io/mojito-sdk/modules/core.html): Detailed information about the core SDK functionalities, classes, and utility functions.
+  - [**React Hooks**](https://raoulpicconi.github.io/mojito-sdk/modules/react_hooks.html): Documentation for all available React hooks for easy integration with your UI.
+
+Please explore these sections to get a comprehensive understanding of the SDK's capabilities. The exact paths and section names might vary slightly based on the TypeDoc generation.
 
 ## Contributing
 
@@ -79,9 +171,9 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ## Repository
 
-- **Homepage:** [https://github.com/mintlayer/mojito-sdk#readme](https://github.com/mintlayer/mojito-sdk#readme)
-- **Bugs:** [https://github.com/mintlayer/mojito-sdk/issues](https://github.com/mintlayer/mojito-sdk/issues)
-- **Repository:** [https://github.com/mintlayer/mojito-sdk.git](https://github.com/mintlayer/mojito-sdk.git)
+- **Homepage:** [https://github.com/raoulpicconi/mojito-sdk#readme](https://github.com/raoulpicconi/mojito-sdk#readme)
+- **Bugs:** [https://github.com/raoulpicconi/mojito-sdk/issues](https://github.com/raoulpicconi/mojito-sdk/issues)
+- **Repository:** [https://github.com/raoulpicconi/mojito-sdk.git](https://github.com/raoulpicconi/mojito-sdk.git)
 
 ## License
 
