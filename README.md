@@ -30,7 +30,7 @@ Here are a couple of examples to get you started:
 
 This example assumes you have a `MintlayerProvider` set up in your React application.
 
-```jsx
+```javascript
 import React from "react"
 import { useWalletBalance } from "@raoul-picconi/mojito-sdk"
 
@@ -55,9 +55,9 @@ export default WalletDisplay
 
 This example assumes you have a `MintlayerProvider` set up in your React application.
 
-```jsx
+```javascript
 import React from "react"
-import { useTransfer } from "@raoul-picconi/mojito-sdk
+import { useTransfer } from "@raoul-picconi/mojito-sdk"
 
 function Transfer() {
   const { mutate: transfer, isPending, error } = useTransfer()
@@ -74,7 +74,7 @@ function Transfer() {
   }
 
   const handleSubmit = (e) => {
-    mutate({to, amount})
+    mutate({ to, amount })
   }
 
   return (
@@ -87,7 +87,11 @@ function Transfer() {
         <button type="submit">Transfer</button>
       </form>
       {error && <p>An error occurred, please try again</p>}
-      {isPending && <p>Transferring {amount} ML to {to}...</p>}
+      {isPending && (
+        <p>
+          Transferring {amount} ML to {to}...
+        </p>
+      )}
       {isSuccess && <p>Transfer complete!</p>}
     </div>
   )
