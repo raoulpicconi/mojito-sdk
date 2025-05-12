@@ -366,20 +366,15 @@ export interface TokenDetails {
 }
 
 export interface NFTInfo {
-  id: string
-  owner: string
-  metadata: NFTMetadata
-}
-
-export interface NFTMetadata {
-  media_hash: string
-  name: string
-  description: string
-  ticker: string
-  creator?: string
-  icon_uri?: string
-  media_uri?: string
-  additional_metadata_uri?: string
+  additional_metadata_uri?: { hex?: string; string: string }
+  creator?: { hex?: string; string: string }
+  description: { hex?: string; string: string }
+  icon_uri?: { hex?: string; string: string }
+  media_hash: { hex?: string; string: string }
+  media_uri?: { hex?: string; string: string }
+  name: { hex?: string; string: string }
+  owner: { hex?: string; string: string }
+  ticker: { hex?: string; string: string }
 }
 
 export interface OrderDetails {
