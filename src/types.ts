@@ -61,6 +61,10 @@ export type TransferParams = Parameters<Client["transfer"]>[0]
 
 export type TransferResponse = SignTransactionResponse
 
+export type TransferNftParams = Parameters<Client["transferNft"]>[0]
+
+export type TransferNftResponse = SignTransactionResponse
+
 export type DelegateParams = Parameters<Client["delegate"]>[0]
 
 export type DelegateResponse = SignTransactionResponse
