@@ -223,6 +223,40 @@ export interface TransactionDetail {
       type: string
       token_id?: string
     }
+    data?: {
+      name?: {
+        hex: string
+        string: string
+      }
+      description?: {
+        hex: string
+        string: string
+      }
+      icon_uri?: {
+        hex: string
+        string: string
+      }
+      media_uri?: {
+        hex: string
+        string: string
+      }
+      media_hash?: {
+        hex: string
+        string: string
+      }
+      additional_metadata_uri?: {
+        hex: string
+        string: string
+      }
+      creator?: {
+        hex: string
+        string: string
+      }
+      ticker?: {
+        hex: string
+        string: string
+      }
+    }
     token_ticker?: {
       hex: string
       string: string
