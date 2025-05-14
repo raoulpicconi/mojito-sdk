@@ -310,8 +310,8 @@ export interface UtxoOutPoint {
 }
 
 export interface AddressInfo {
-  coin_balance: Amount
-  locked_coin_balance: Amount
+  coin_balance: AmountWithAtoms
+  locked_coin_balance: AmountWithAtoms
   transaction_history: string[]
   tokens: TokenBalance[]
 }
