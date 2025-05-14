@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { MintlayerProviderNotFoundError } from "../errors"
+import { MintlayerClientNotFoundError, MintlayerProviderNotFoundError } from "../errors"
 import { useContext } from "react"
 import { MintlayerContext } from "../context"
+import { useClient } from "./useClient"
 
 /**
  * Hook for disconnecting the current account
@@ -9,6 +10,7 @@ import { MintlayerContext } from "../context"
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
 export function useDisconnect() {
+  const client = useClient()
   const queryClient = useQueryClient()
   const context = useContext(MintlayerContext)
 
@@ -22,12 +24,9 @@ export function useDisconnect() {
     mutationFn: () => {
       storageService.setItem(storageKeys.connectionState, "disconnected")
 
-      // FIXME: This is a hack to ensure the connection state is updated, to be removed once disconnect is implemented
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true)
-        }, 100)
-      })
+      if (!client) throw new MintlayerClientNotFoundError()
+
+      return client.disconnect()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "account"] })

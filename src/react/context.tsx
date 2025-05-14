@@ -58,6 +58,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
     return {
       network,
       isExtensionInstalled: false,
+      version: "",
       retryCount: 0,
       apiServer: normalizedApiServer,
     }
@@ -70,7 +71,11 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       const mintlayer = await Client.create({ network: state.network as "mainnet" | "testnet" })
       if (mintlayer?.isMintlayer) {
         client.current = mintlayer
-        setState((prev) => ({ ...prev, isExtensionInstalled: true }))
+        setState((prev) => ({
+          ...prev,
+          isExtensionInstalled: window.mojito?.isExtension ?? false,
+          version: window.mojito?.version ?? "",
+        }))
         setNetwork(state.network || "mainnet")
 
         const isDisconnected = storageService.getItem(storageKeys.connectionState) === "disconnected"
