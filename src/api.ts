@@ -212,8 +212,8 @@ export class MintlayerAPIClient {
     } catch (error) {
       if (error instanceof Error && error.message.includes("404")) {
         return {
-          coin_balance: "0",
-          locked_coin_balance: "0",
+          coin_balance: { atoms: "0", decimal: "0" },
+          locked_coin_balance: { atoms: "0", decimal: "0" },
           transaction_history: [],
           tokens: [],
         }
