@@ -7,6 +7,7 @@ import { AccountAddresses, Network } from "../types"
 import { MintlayerAPIClient } from "../api"
 import { isValidUrl, normalizeUrl } from "../utils"
 import { Client } from "@mintlayer/sdk"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface MintlayerProviderProps {
   children: ReactNode
@@ -34,16 +35,15 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
   const {
     storageKeys = { connectionState: "mintlayer_connection_state", network: "mintlayer_network" },
     storage,
-    maxRetries = 5,
-    initialDelay = 1000,
     autoConnect = true,
     apiServer = "https://api-server.mintlayer.org/api/v2",
   } = config
 
   const storageService = storage ?? localStorageService
 
+  const queryClient = useQueryClient()
+
   const client = useRef<Client | null>(null)
-  const pendingTimeout = useRef<NodeJS.Timeout | null>(null)
   const [state, setState] = useState<MintlayerState>(() => {
     const savedNetwork = storageService.getItem(storageKeys.network) as Network | null
 
@@ -60,7 +60,6 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       network,
       isExtensionInstalled: false,
       version: "",
-      retryCount: 0,
       apiServer: normalizedApiServer,
       addresses: {
         mainnet: { receiving: [], change: [] },
@@ -77,6 +76,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
         network: state.network as "mainnet" | "testnet",
         autoRestore: false,
       } as any)
+
       if (mintlayer?.isMintlayer) {
         client.current = mintlayer
         setState((prev) => ({
@@ -88,32 +88,15 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
 
         const isDisconnected = storageService.getItem(storageKeys.connectionState) === "disconnected"
 
-        if (autoConnect && !isDisconnected && !client.current.isConnected()) {
+        if (autoConnect && !isDisconnected) {
           const addresses = await client.current.connect()
           setAddresses(addresses as any)
+          queryClient.invalidateQueries({ queryKey: ["mintlayer", "account"] })
         }
-        return
       }
-
-      if (state.retryCount >= maxRetries) {
-        console.warn("Mintlayer client not found after maximum retries")
-        return
-      }
-
-      const delay = initialDelay * Math.pow(2, state.retryCount) // Exponential backoff
-      setState((prev) => ({ ...prev, retryCount: prev.retryCount + 1 }))
-
-      pendingTimeout.current = setTimeout(checkClient, delay)
     }
 
     checkClient()
-
-    return () => {
-      if (pendingTimeout.current) {
-        clearTimeout(pendingTimeout.current)
-        pendingTimeout.current = null
-      }
-    }
   }, [])
 
   const setNetwork = useCallback(

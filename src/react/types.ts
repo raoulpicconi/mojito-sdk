@@ -31,8 +31,6 @@ export interface MintlayerConfig {
   defaultNetwork?: Network
   storageKeys?: StorageKeys
   storage?: Storage
-  maxRetries?: number
-  initialDelay?: number
   apiServer?: string
   autoConnect?: boolean
 }
@@ -41,7 +39,6 @@ export interface MintlayerState {
   isExtensionInstalled: boolean
   version: string
   network: Network | null
-  retryCount: number
   apiServer: string
   addresses: AccountAddresses
 }
