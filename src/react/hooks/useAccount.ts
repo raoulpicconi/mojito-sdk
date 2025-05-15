@@ -58,7 +58,17 @@ export function useAccount(options?: UseAccountOptions) {
 
       return {
         isConnected: true,
-        address: addresses as any,
+        address: {
+          ...emptyAddresses,
+          [network || "mainnet"]: {
+            receiving: Array.isArray(addresses)
+              ? addresses?.slice(0, 20) || []
+              : (addresses[network || "mainnet"] as any).receiving,
+            change: Array.isArray(addresses)
+              ? addresses?.slice(20) || []
+              : (addresses[network || "mainnet"] as any).change,
+          },
+        },
       }
     },
     // Spread the additional options
