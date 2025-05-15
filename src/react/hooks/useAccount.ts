@@ -3,7 +3,7 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError, MintlayerProviderNotFoundError } from "../errors"
-import { AddressData, CheckConnectionResponse, CheckConnectionSuccessNegative } from "../../types"
+import { CheckConnectionResponse } from "../../types"
 import { useNetwork } from "./useNetwork"
 import { MintlayerContext } from "../context"
 import { useContext } from "react"
@@ -38,17 +38,31 @@ export function useAccount(options?: UseAccountOptions) {
   return useQuery({
     queryKey: ["mintlayer", "account", network],
     queryFn: async () => {
+      const emptyAddresses = { mainnet: { receiving: [], change: [] }, testnet: { receiving: [], change: [] } }
       const connectionState = storageService.getItem(storageKeys.connectionState)
 
       if (connectionState === "disconnected") {
-        const emptyAddress = { receiving: [], change: [] } as AddressData
         return {
           isConnected: false,
-          address: { mainnet: emptyAddress, testnet: emptyAddress },
-        } as CheckConnectionSuccessNegative
+          address: emptyAddresses,
+        }
       }
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.request({ method: "checkConnection" })
+      const res = await client.request({ method: "checkConnection" })
+      if (!res.isConnected) {
+        return {
+          isConnected: false,
+          address: emptyAddresses,
+        }
+      }
+      const addresses = await client.getAddresses()
+      return {
+        isConnected: true,
+        address: {
+          ...emptyAddresses,
+          [network || "mainnet"]: { receiving: addresses.slice(0, 20), change: addresses.slice(20) },
+        },
+      }
     },
     // Spread the additional options
     ...options,

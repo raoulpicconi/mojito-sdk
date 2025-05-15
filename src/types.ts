@@ -20,24 +20,10 @@ export interface GetNetworkResponse {
   network: Network
 }
 
-export interface CheckConnectionSuccessPositive {
-  isConnected: true
+export interface CheckConnectionResponse {
+  isConnected: boolean
   address: AccountAddresses
 }
-
-export interface CheckConnectionSuccessNegative {
-  isConnected: false
-}
-
-export interface CheckConnectionError {
-  isConnected: false
-  error: string
-}
-
-export type CheckConnectionResponse =
-  | CheckConnectionSuccessPositive
-  | CheckConnectionSuccessNegative
-  | CheckConnectionError
 
 export interface Delegation {
   balance: {
