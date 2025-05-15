@@ -55,12 +55,10 @@ export function useAccount(options?: UseAccountOptions) {
         }
       }
       const addresses = await client.getAddresses()
+
       return {
         isConnected: true,
-        address: {
-          ...emptyAddresses,
-          [network || "mainnet"]: { receiving: addresses.slice(0, 20), change: addresses.slice(20) },
-        },
+        address: addresses as any,
       }
     },
     // Spread the additional options
