@@ -7,6 +7,7 @@ import { CheckConnectionResponse } from "../../types"
 import { useNetwork } from "./useNetwork"
 import { MintlayerContext } from "../context"
 import { useContext } from "react"
+import { useConfig } from "./useConfig"
 
 // Define the type for the options, excluding queryKey and queryFn
 type UseAccountOptions = Omit<
@@ -25,7 +26,7 @@ type UseAccountOptions = Omit<
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
 export function useAccount(options?: UseAccountOptions) {
-  const client = useClient()
+  const { addresses } = useConfig()
   const { network } = useNetwork()
   const context = useContext(MintlayerContext)
 
@@ -47,28 +48,15 @@ export function useAccount(options?: UseAccountOptions) {
           address: emptyAddresses,
         }
       }
-      if (!client) throw new MintlayerClientNotFoundError()
-      if (!client.isConnected()) {
+      if (addresses[network || "mainnet"]?.receiving?.length === 0) {
         return {
           isConnected: false,
           address: emptyAddresses,
         }
       }
-      const addresses = await client.getAddresses()
-
       return {
         isConnected: true,
-        address: {
-          ...emptyAddresses,
-          [network || "mainnet"]: {
-            receiving: Array.isArray(addresses)
-              ? addresses?.slice(0, 20) || []
-              : (addresses[network || "mainnet"] as any).receiving,
-            change: Array.isArray(addresses)
-              ? addresses?.slice(20) || []
-              : (addresses[network || "mainnet"] as any).change,
-          },
-        },
+        address: addresses,
       }
     },
     // Spread the additional options

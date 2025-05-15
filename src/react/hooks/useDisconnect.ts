@@ -18,11 +18,15 @@ export function useDisconnect() {
     throw new MintlayerProviderNotFoundError()
   }
 
-  const { storageService, storageKeys } = context
+  const { storageService, storageKeys, setAddresses } = context
 
   return useMutation({
     mutationFn: () => {
       storageService.setItem(storageKeys.connectionState, "disconnected")
+      setAddresses({
+        mainnet: { receiving: [], change: [] },
+        testnet: { receiving: [], change: [] },
+      })
 
       if (!client) throw new MintlayerClientNotFoundError()
 

@@ -3,7 +3,7 @@
 import { localStorageService } from "../storage"
 import { MintlayerConfig, MintlayerState, Storage, StorageKeys } from "./types"
 import React, { createContext, ReactNode, useMemo, useState, useEffect, useCallback, useRef } from "react"
-import { Network } from "../types"
+import { AccountAddresses, Network } from "../types"
 import { MintlayerAPIClient } from "../api"
 import { isValidUrl, normalizeUrl } from "../utils"
 import { Client } from "@mintlayer/sdk"
@@ -17,6 +17,7 @@ interface MintlayerContextValue {
   client: Client | null
   state: MintlayerState
   setNetwork: (network: Network) => void
+  setAddresses: (addresses: AccountAddresses) => void
   storageService: Storage
   storageKeys: StorageKeys
   apiClient: MintlayerAPIClient
@@ -61,6 +62,10 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       version: "",
       retryCount: 0,
       apiServer: normalizedApiServer,
+      addresses: {
+        mainnet: { receiving: [], change: [] },
+        testnet: { receiving: [], change: [] },
+      },
     }
   })
 
@@ -84,7 +89,8 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
         const isDisconnected = storageService.getItem(storageKeys.connectionState) === "disconnected"
 
         if (autoConnect && !isDisconnected && !client.current.isConnected()) {
-          client.current.connect()
+          const addresses = await client.current.connect()
+          setState((prev) => ({ ...prev, addresses }) as any)
         }
         return
       }
@@ -121,6 +127,10 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
     [storageService, storageKeys.network, client],
   )
 
+  const setAddresses = useCallback((addresses: AccountAddresses) => {
+    setState((prev) => ({ ...prev, addresses }))
+  }, [])
+
   const apiClient = useMemo(() => {
     return new MintlayerAPIClient(state.apiServer)
   }, [state.apiServer])
@@ -133,8 +143,9 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       storageService,
       storageKeys,
       apiClient,
+      setAddresses,
     }),
-    [client, state, setNetwork, apiClient, storageService, storageKeys],
+    [client, state, setNetwork, apiClient, storageService, storageKeys, setAddresses],
   )
 
   return <MintlayerContext.Provider value={value}>{children}</MintlayerContext.Provider>
