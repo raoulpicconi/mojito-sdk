@@ -48,8 +48,7 @@ export function useAccount(options?: UseAccountOptions) {
         }
       }
       if (!client) throw new MintlayerClientNotFoundError()
-      const res = await client.request({ method: "checkConnection" })
-      if (!res.isConnected) {
+      if (!client.isConnected()) {
         return {
           isConnected: false,
           address: emptyAddresses,

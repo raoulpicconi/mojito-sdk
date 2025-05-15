@@ -80,12 +80,8 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
 
         const isDisconnected = storageService.getItem(storageKeys.connectionState) === "disconnected"
 
-        if (autoConnect && !isDisconnected) {
-          const res = await client.current.request({ method: "checkConnection" })
-
-          if (!res.isConnected) {
-            client.current.connect()
-          }
+        if (autoConnect && !isDisconnected && !client.current.isConnected()) {
+          client.current.connect()
         }
         return
       }
