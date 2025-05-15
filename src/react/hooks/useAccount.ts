@@ -37,7 +37,7 @@ export function useAccount(options?: UseAccountOptions) {
   const { storageService, storageKeys } = context
 
   return useQuery({
-    queryKey: ["mintlayer", "account", network],
+    queryKey: ["mintlayer", "account", network, JSON.stringify(addresses)],
     queryFn: async () => {
       const emptyAddresses = { mainnet: { receiving: [], change: [] }, testnet: { receiving: [], change: [] } }
       const connectionState = storageService.getItem(storageKeys.connectionState)
