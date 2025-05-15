@@ -90,7 +90,7 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
 
         if (autoConnect && !isDisconnected && !client.current.isConnected()) {
           const addresses = await client.current.connect()
-          setState((prev) => ({ ...prev, addresses }) as any)
+          setAddresses(addresses as any)
         }
         return
       }
