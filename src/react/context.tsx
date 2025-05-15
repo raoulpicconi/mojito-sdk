@@ -68,7 +68,10 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
     if (typeof window === "undefined") return
 
     const checkClient = async () => {
-      const mintlayer = await Client.create({ network: state.network as "mainnet" | "testnet" })
+      const mintlayer = await Client.create({
+        network: state.network as "mainnet" | "testnet",
+        autoRestore: false,
+      } as any)
       if (mintlayer?.isMintlayer) {
         client.current = mintlayer
         setState((prev) => ({
