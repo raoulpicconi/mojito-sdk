@@ -37,8 +37,7 @@ export function useAddressesInfo(params: UseAddressesInfoParams, options?: UseAd
         if (!apiClient) throw new MintlayerApiClientNotFoundError()
         return apiClient.getAddress(address)
       },
-      // Spread the additional options
+      ...options,
     })),
-    ...options,
   })
 }

@@ -37,8 +37,7 @@ export function useTransactions(params: UseTransactionsParams, options?: UseTran
         if (!apiClient) throw new MintlayerApiClientNotFoundError()
         return apiClient.getTransaction(transactionId)
       },
-      // Spread the additional options
+      ...options,
     })),
-    ...options,
   })
 }
