@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query"
+import { useQuery, UseQueryOptions, UseQueryResult } from "@tanstack/react-query"
 import { useAccount } from "./useAccount"
 import { useClient } from "./useClient"
 import { MintlayerClientNotFoundError } from "../errors"
@@ -21,7 +21,9 @@ type UseAvailableOrdersOptions = Omit<
  * @returns A query object containing the list of available orders
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
-export function useAvailableOrders(options?: UseAvailableOrdersOptions) {
+export function useAvailableOrders(
+  options?: UseAvailableOrdersOptions,
+): UseQueryResult<Awaited<ReturnType<Client["getAvailableOrders"]>>, Error> {
   const client = useClient()
   const { network } = useNetwork()
   const { data: addressesHash, isSuccess: isHashReady } = useAddressesHash()
