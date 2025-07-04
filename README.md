@@ -26,6 +26,91 @@ yarn add @raoul-picconi/mojito-sdk @tanstack/react-query react react-dom
 
 Here are a couple of examples to get you started:
 
+### New Features (v3.1.0+)
+
+This SDK now includes support for the latest @mintlayer/sdk features:
+
+#### HTLC (Hash Time-Locked Contract) Support
+
+```javascript
+import { useCreateHtlc, useExtractHtlcSecret, useRefundHtlc } from "@raoul-picconi/mojito-sdk"
+
+function HTLCExample() {
+  const { mutate: createHtlc } = useCreateHtlc()
+  const { mutate: extractSecret } = useExtractHtlcSecret()
+  const { mutate: refundHtlc } = useRefundHtlc()
+
+  // Create an HTLC transaction
+  const handleCreateHtlc = () => {
+    createHtlc({
+      destination: "address",
+      value: "1000000",
+      hash_lock: "hash",
+      timelock: { block_height: 1000 },
+    })
+  }
+
+  // Extract secret from HTLC
+  const handleExtractSecret = () => {
+    extractSecret({
+      htlc_output: htlcOutput,
+      secret: "secret",
+    })
+  }
+
+  // Refund HTLC
+  const handleRefund = () => {
+    refundHtlc({
+      htlc_output: htlcOutput,
+    })
+  }
+}
+```
+
+#### Challenge Signing for Authentication
+
+```javascript
+import { useSignChallenge } from "@raoul-picconi/mojito-sdk"
+
+function AuthenticationExample() {
+  const { mutate: signChallenge } = useSignChallenge()
+
+  const handleSignMessage = () => {
+    signChallenge({
+      message: "Sign this message to authenticate",
+      encoding: "utf8",
+    })
+  }
+}
+```
+
+#### UTXO Preview Helpers
+
+```javascript
+import { usePreviewUtxoChange, useDecorateWithUtxoFetch } from "@raoul-picconi/mojito-sdk"
+
+function UTXOPreviewExample() {
+  const { mutate: previewUtxo } = usePreviewUtxoChange()
+  const { mutate: decorateUtxo } = useDecorateWithUtxoFetch()
+
+  // Preview UTXO changes before transaction
+  const handlePreview = () => {
+    previewUtxo({
+      transaction: "transaction_hex",
+      addresses: ["address1", "address2"],
+    })
+  }
+
+  // Decorate transaction with UTXO fetch
+  const handleDecorate = () => {
+    decorateUtxo({
+      transaction: "transaction_hex",
+      addresses: ["address1", "address2"],
+    })
+  }
+}
+```
+
 ### 1. Using a React Hook to query data (e.g., to display wallet balance)
 
 This example assumes you have a `MintlayerProvider` set up in your React application.

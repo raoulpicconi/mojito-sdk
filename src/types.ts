@@ -390,3 +390,93 @@ export interface PaginationParams {
 export type IssueNftParams = Parameters<Client["issueNft"]>[0]
 
 export type IssueNftResponse = SignTransactionResponse
+
+// HTLC (Hash Time-Locked Contract) Types
+export interface HtlcOutput {
+  destination: string
+  value: Amount
+  token_id?: string
+  hash_lock: string
+  timelock: Timelock
+}
+
+export interface Timelock {
+  block_height?: number
+  timestamp?: number
+}
+
+export interface CreateHtlcArgs {
+  destination: string
+  value: Amount
+  token_id?: string
+  hash_lock: string
+  timelock: Timelock
+}
+
+export interface ExtractHtlcSecretArgs {
+  htlc_output: HtlcOutput
+  secret: string
+}
+
+export interface RefundHtlcArgs {
+  htlc_output: HtlcOutput
+}
+
+// HTLC Type Aliases
+export type CreateHtlcParams = Parameters<Client["createHtlc"]>[0]
+export type CreateHtlcResponse = SignTransactionResponse
+
+export type ExtractHtlcSecretParams = Parameters<Client["extractHtlcSecret"]>[0]
+export type ExtractHtlcSecretResponse = SignTransactionResponse
+
+export type RefundHtlcParams = Parameters<Client["refundHtlc"]>[0]
+export type RefundHtlcResponse = SignTransactionResponse
+
+// Challenge Signing Types
+export interface SignChallengeArgs {
+  message: string
+  encoding?: "utf8" | "hex"
+}
+
+export interface SignChallengeResponse {
+  signature: string
+  public_key: string
+}
+
+// Challenge Signing Type Aliases
+export type SignChallengeParams = Parameters<Client["signChallenge"]>[0]
+
+// Custom Signer Types
+export interface AccountProvider {
+  getAddresses(): Promise<AccountAddresses>
+  signTransaction(transaction: string): Promise<string>
+  signChallenge(message: string, encoding?: "utf8" | "hex"): Promise<{ signature: string; public_key: string }>
+}
+
+export interface CustomSignerParams {
+  accountProvider: AccountProvider
+  network: Network
+}
+
+// Custom Signer Type Aliases
+// Note: Custom signer functionality may be implemented differently in the underlying SDK
+
+// UTXO Preview Types
+export interface PreviewUtxoChangeArgs {
+  transaction: string
+  addresses: string[]
+}
+
+export interface PreviewUtxoChangeResponse {
+  spent: any[] // UtxoEntry[] from SDK
+  created: any[] // UtxoEntry[] from SDK
+}
+
+export interface DecorateWithUtxoFetchArgs {
+  transaction: string
+  addresses: string[]
+}
+
+// UTXO Preview Type Aliases
+export type PreviewUtxoChangeParams = Parameters<Client["previewUtxoChange"]>[0]
+export type DecorateWithUtxoFetchParams = Parameters<Client["decorateWithUtxoFetch"]>[0]
