@@ -111,6 +111,85 @@ function UTXOPreviewExample() {
 }
 ```
 
+#### Bitcoin Wallet Support (v3.1.0+)
+
+This SDK now includes comprehensive Bitcoin wallet support for atomic swaps and HTLC operations:
+
+```javascript
+import { useBTCCredentials, useCreateBTCHTLC, useSpendBTCHTLC, useRefundBTCHTLC } from "@raoul-picconi/mojito-sdk"
+
+function BitcoinWalletExample() {
+  // Get BTC credentials (address and public key)
+  const { data: btcCredentials, isLoading, error } = useBTCCredentials()
+
+  // HTLC operations
+  const createHTLC = useCreateBTCHTLC()
+  const spendHTLC = useSpendBTCHTLC()
+  const refundHTLC = useRefundBTCHTLC()
+
+  // Create Bitcoin HTLC
+  const handleCreateHTLC = async () => {
+    const request = {
+      amount: "1000000", // 0.01 BTC in satoshis
+      secretHash: "a1b2c3d4e5f6...",
+      recipientPublicKey: "recipient_public_key",
+      refundPublicKey: btcCredentials.btcPublicKey,
+      timeoutBlocks: 144, // ~24 hours
+    }
+
+    const result = await createHTLC.mutateAsync({ request, isTestnet: true })
+    console.log("HTLC created:", result.txId)
+  }
+
+  // Claim Bitcoin HTLC
+  const handleSpendHTLC = async () => {
+    const request = {
+      type: "spendHtlc",
+      utxo: {
+        /* HTLC UTXO data */
+      },
+      redeemScriptHex: "redeem_script_hex",
+      to: btcCredentials.btcAddress,
+      secret: "revealed_secret_hex",
+    }
+
+    const result = await spendHTLC.mutateAsync({ request, isTestnet: true })
+    console.log("HTLC claimed:", result.txId)
+  }
+
+  // Refund Bitcoin HTLC
+  const handleRefundHTLC = async () => {
+    const request = {
+      type: "refundHtlc",
+      utxo: {
+        /* HTLC UTXO data */
+      },
+      redeemScriptHex: "redeem_script_hex",
+      to: btcCredentials.btcAddress,
+    }
+
+    const result = await refundHTLC.mutateAsync({ request, isTestnet: true })
+    console.log("HTLC refunded:", result.txId)
+  }
+
+  return (
+    <div>
+      {btcCredentials && (
+        <div>
+          <p>BTC Address: {btcCredentials.btcAddress}</p>
+          <p>BTC Public Key: {btcCredentials.btcPublicKey}</p>
+        </div>
+      )}
+      <button onClick={handleCreateHTLC}>Create HTLC</button>
+      <button onClick={handleSpendHTLC}>Claim HTLC</button>
+      <button onClick={handleRefundHTLC}>Refund HTLC</button>
+    </div>
+  )
+}
+```
+
+**Note:** Bitcoin wallet functionality requires a wallet that supports Bitcoin operations. Test thoroughly on testnet before using mainnet.
+
 ### 1. Using a React Hook to query data (e.g., to display wallet balance)
 
 This example assumes you have a `MintlayerProvider` set up in your React application.

@@ -480,3 +480,70 @@ export interface DecorateWithUtxoFetchArgs {
 // UTXO Preview Type Aliases
 export type PreviewUtxoChangeParams = Parameters<Client["previewUtxoChange"]>[0]
 export type DecorateWithUtxoFetchParams = Parameters<Client["decorateWithUtxoFetch"]>[0]
+
+// Bitcoin Wallet Types
+export interface BTCCredentialsResponse {
+  btcAddress: string
+  btcPublicKey: string
+}
+
+export interface BTCHTLCCreateRequest {
+  amount: string // Amount in satoshis
+  secretHash: string // Secret hash in hex format
+  recipientPublicKey: string // Public key of who can claim with secret
+  refundPublicKey: string // Public key of who can refund after timeout
+  timeoutBlocks: number // Number of BTC blocks for timeout
+}
+
+export interface BTCHTLCSpendRequest {
+  type: "spendHtlc" // Fixed type identifier
+  utxo: any // UTXO data from blockchain API
+  redeemScriptHex: string // Redeem script from HTLC creation
+  to: string // Destination address
+  secret: string // Secret to reveal (hex format)
+}
+
+export interface BTCHTLCRefundRequest {
+  type: "refundHtlc" // Fixed type identifier
+  utxo: any // UTXO data from blockchain API
+  redeemScriptHex: string // Redeem script from HTLC creation
+  to: string // Destination address
+}
+
+export interface BTCTransactionResponse {
+  signedTxHex: string // Signed transaction ready to broadcast
+  transactionId: string // Transaction ID
+}
+
+export interface BTCHTLCCreateResponse {
+  signedTxHex: string // Signed transaction ready to broadcast
+  transactionId: string // Transaction ID of the funding transaction
+  htlcAddress: string // Generated HTLC contract address
+  redeemScript: string // Redeem script for spending operations
+}
+
+// Bitcoin Request Parameters
+export interface GetBTCCredentialsParams {
+  items: ["btcAddress", "btcPublicKey"]
+}
+
+export interface CreateBTCHTLCParams {
+  chain: "bitcoin"
+  txData: {
+    JSONRepresentation: BTCHTLCCreateRequest
+  }
+}
+
+export interface SpendBTCHTLCParams {
+  chain: "bitcoin"
+  txData: {
+    JSONRepresentation: BTCHTLCSpendRequest
+  }
+}
+
+export interface RefundBTCHTLCParams {
+  chain: "bitcoin"
+  txData: {
+    JSONRepresentation: BTCHTLCRefundRequest
+  }
+}
