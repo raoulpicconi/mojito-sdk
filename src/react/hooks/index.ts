@@ -81,6 +81,7 @@ export * from "./useXPub"
 
 // Bitcoin Wallet Hooks
 export * from "./useBTCCredentials"
+export * from "./useBTCBalance"
 export * from "./useCreateBTCHTLC"
 export * from "./useSpendBTCHTLC"
 export * from "./useRefundBTCHTLC"

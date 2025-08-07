@@ -547,3 +547,50 @@ export interface RefundBTCHTLCParams {
     JSONRepresentation: BTCHTLCRefundRequest
   }
 }
+
+// Bitcoin Balance and UTXO Types
+export interface BTCUTXO {
+  txid: string
+  vout: number
+  status: {
+    confirmed: boolean
+    block_height?: number
+    block_hash?: string
+    block_time?: number
+  }
+  value: number // Value in satoshis
+  scriptpubkey: string
+  scriptpubkey_address: string
+  scriptpubkey_asm: string
+  scriptpubkey_type: string
+  weight: number
+}
+
+export interface BTCBalance {
+  address: string
+  chain_stats: {
+    funded_txo_count: number
+    funded_txo_sum: number
+    spent_txo_count: number
+    spent_txo_sum: number
+    tx_count: number
+  }
+  mempool_stats: {
+    funded_txo_count: number
+    funded_txo_sum: number
+    spent_txo_count: number
+    spent_txo_sum: number
+    tx_count: number
+  }
+}
+
+export interface BTCBalanceResponse {
+  balance: {
+    confirmed: number // Balance in satoshis
+    unconfirmed: number // Unconfirmed balance in satoshis
+    total: number // Total balance in satoshis
+  }
+  utxos: BTCUTXO[]
+  address: string
+  network: "mainnet" | "testnet"
+}

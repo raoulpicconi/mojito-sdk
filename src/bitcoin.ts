@@ -10,6 +10,9 @@ import {
   CreateBTCHTLCParams,
   SpendBTCHTLCParams,
   RefundBTCHTLCParams,
+  BTCUTXO,
+  BTCBalance,
+  BTCBalanceResponse,
 } from "./types"
 
 /**
@@ -213,5 +216,174 @@ export async function broadcastBTCTransaction(signedTxHex: string, isTestnet: bo
       }
     }
     throw new Error(`Broadcast error: ${error instanceof Error ? error.message : "Unknown error"}`)
+  }
+}
+
+/**
+ * Fetch Bitcoin UTXOs from mempool.space API
+ * @param address - Bitcoin address to fetch UTXOs for
+ * @param isTestnet - Whether to use testnet or mainnet
+ * @returns Promise resolving to array of UTXOs
+ * @throws Error if fetch fails
+ */
+export async function fetchBTCUTXOsFromMempool(address: string, isTestnet: boolean = false): Promise<BTCUTXO[]> {
+  try {
+    if (!address) {
+      throw new Error("Bitcoin address is required")
+    }
+
+    const baseUrl = isTestnet ? "https://mempool.space/testnet" : "https://mempool.space"
+    const response = await fetch(`${baseUrl}/api/address/${address}/utxo`)
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch UTXOs from mempool.space: ${response.statusText}`)
+    }
+
+    const utxos = await response.json()
+    return utxos as BTCUTXO[]
+  } catch (error) {
+    throw new Error(
+      `Error fetching UTXOs from mempool.space: ${error instanceof Error ? error.message : "Unknown error"}`,
+    )
+  }
+}
+
+/**
+ * Fetch Bitcoin balance from mempool.space API
+ * @param address - Bitcoin address to fetch balance for
+ * @param isTestnet - Whether to use testnet or mainnet
+ * @returns Promise resolving to balance information
+ * @throws Error if fetch fails
+ */
+export async function fetchBTCBalanceFromMempool(address: string, isTestnet: boolean = false): Promise<BTCBalance> {
+  try {
+    if (!address) {
+      throw new Error("Bitcoin address is required")
+    }
+
+    const baseUrl = isTestnet ? "https://mempool.space/testnet" : "https://mempool.space"
+    const response = await fetch(`${baseUrl}/api/address/${address}`)
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch balance from mempool.space: ${response.statusText}`)
+    }
+
+    const balance = await response.json()
+    return balance as BTCBalance
+  } catch (error) {
+    throw new Error(
+      `Error fetching balance from mempool.space: ${error instanceof Error ? error.message : "Unknown error"}`,
+    )
+  }
+}
+
+/**
+ * Fetch Bitcoin UTXOs from blockstream.info API
+ * @param address - Bitcoin address to fetch UTXOs for
+ * @param isTestnet - Whether to use testnet or mainnet
+ * @returns Promise resolving to array of UTXOs
+ * @throws Error if fetch fails
+ */
+export async function fetchBTCUTXOsFromBlockstream(address: string, isTestnet: boolean = false): Promise<BTCUTXO[]> {
+  try {
+    if (!address) {
+      throw new Error("Bitcoin address is required")
+    }
+
+    const baseUrl = isTestnet ? "https://blockstream.info/testnet" : "https://blockstream.info"
+    const response = await fetch(`${baseUrl}/api/address/${address}/utxo`)
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch UTXOs from blockstream.info: ${response.statusText}`)
+    }
+
+    const utxos = await response.json()
+    return utxos as BTCUTXO[]
+  } catch (error) {
+    throw new Error(
+      `Error fetching UTXOs from blockstream.info: ${error instanceof Error ? error.message : "Unknown error"}`,
+    )
+  }
+}
+
+/**
+ * Get comprehensive Bitcoin balance and UTXOs for an address
+ * Uses mempool.space as primary source with blockstream.info as fallback
+ * @param address - Bitcoin address to fetch data for
+ * @param isTestnet - Whether to use testnet or mainnet
+ * @returns Promise resolving to balance response with UTXOs
+ * @throws Error if both APIs fail
+ */
+export async function getBTCBalance(address: string, isTestnet: boolean = false): Promise<BTCBalanceResponse> {
+  try {
+    if (!address) {
+      throw new Error("Bitcoin address is required")
+    }
+
+    let utxos: BTCUTXO[] = []
+    let balance: BTCBalance | null = null
+
+    // Try mempool.space first
+    try {
+      utxos = await fetchBTCUTXOsFromMempool(address, isTestnet)
+      balance = await fetchBTCBalanceFromMempool(address, isTestnet)
+    } catch (mempoolError) {
+      console.warn("mempool.space failed, trying blockstream.info:", mempoolError)
+
+      // Fallback to blockstream.info
+      try {
+        utxos = await fetchBTCUTXOsFromBlockstream(address, isTestnet)
+
+        // Calculate balance from UTXOs since blockstream doesn't provide balance endpoint
+        const confirmedUtxos = utxos.filter((utxo) => utxo.status.confirmed)
+        const unconfirmedUtxos = utxos.filter((utxo) => !utxo.status.confirmed)
+
+        const confirmedBalance = confirmedUtxos.reduce((sum, utxo) => sum + utxo.value, 0)
+        const unconfirmedBalance = unconfirmedUtxos.reduce((sum, utxo) => sum + utxo.value, 0)
+
+        balance = {
+          address,
+          chain_stats: {
+            funded_txo_count: confirmedUtxos.length,
+            funded_txo_sum: confirmedBalance,
+            spent_txo_count: 0,
+            spent_txo_sum: 0,
+            tx_count: 0,
+          },
+          mempool_stats: {
+            funded_txo_count: unconfirmedUtxos.length,
+            funded_txo_sum: unconfirmedBalance,
+            spent_txo_count: 0,
+            spent_txo_sum: 0,
+            tx_count: 0,
+          },
+        }
+      } catch (blockstreamError) {
+        throw new Error(
+          `Both mempool.space and blockstream.info failed: ${mempoolError instanceof Error ? mempoolError.message : "Unknown error"}, ${blockstreamError instanceof Error ? blockstreamError.message : "Unknown error"}`,
+        )
+      }
+    }
+
+    if (!balance) {
+      throw new Error("Failed to fetch balance data from both APIs")
+    }
+
+    const confirmedBalance = balance.chain_stats.funded_txo_sum - balance.chain_stats.spent_txo_sum
+    const unconfirmedBalance = balance.mempool_stats.funded_txo_sum - balance.mempool_stats.spent_txo_sum
+    const totalBalance = confirmedBalance + unconfirmedBalance
+
+    return {
+      balance: {
+        confirmed: confirmedBalance,
+        unconfirmed: unconfirmedBalance,
+        total: totalBalance,
+      },
+      utxos,
+      address,
+      network: isTestnet ? "testnet" : "mainnet",
+    }
+  } catch (error) {
+    throw new Error(`Failed to get BTC balance: ${error instanceof Error ? error.message : "Unknown error"}`)
   }
 }
