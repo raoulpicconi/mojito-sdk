@@ -106,7 +106,7 @@ export async function spendBTCHTLC(client: Client, request: BTCHTLCSpendRequest)
       throw new Error("Missing required HTLC spend parameters")
     }
 
-    const response = await (client as any).request({
+    const response = (await (client as any).request({
       method: "signTransaction",
       params: {
         chain: "bitcoin",
@@ -114,9 +114,9 @@ export async function spendBTCHTLC(client: Client, request: BTCHTLCSpendRequest)
           JSONRepresentation: request,
         },
       } as SpendBTCHTLCParams,
-    })
+    })) as { signedTxHex: string }
 
-    if (!response.signedTxHex) {
+    if (!("signedTxHex" in response)) {
       throw new Error(`Invalid HTLC spend response from wallet: ${JSON.stringify(response)}`)
     }
 
