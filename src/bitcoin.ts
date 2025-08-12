@@ -116,7 +116,7 @@ export async function spendBTCHTLC(client: Client, request: BTCHTLCSpendRequest)
       } as SpendBTCHTLCParams,
     })
 
-    if (!response.signedTxHex || !response.transactionId) {
+    if (!response.signedTxHex) {
       throw new Error(`Invalid HTLC spend response from wallet: ${JSON.stringify(response)}`)
     }
 
