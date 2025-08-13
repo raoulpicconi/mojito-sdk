@@ -493,7 +493,7 @@ export interface BTCCredentialsResponse {
 
 export interface BTCHTLCCreateRequest {
   amount: string // Amount in satoshis
-  secretHash: { hex: string } // Secret hash in hex format
+  secretHash: string // JSON representation of the secret hash in hex format { hex: string }
   recipientPublicKey: string // Public key of who can claim with secret
   refundPublicKey: string // Public key of who can refund after timeout
   timeoutBlocks: number // Number of BTC blocks for timeout
