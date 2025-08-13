@@ -482,6 +482,10 @@ export type PreviewUtxoChangeParams = Parameters<Client["previewUtxoChange"]>[0]
 export type DecorateWithUtxoFetchParams = Parameters<Client["decorateWithUtxoFetch"]>[0]
 
 // Bitcoin Wallet Types
+export interface RequestSecretHashResponse {
+  secret_hash_hex: string
+}
+
 export interface BTCCredentialsResponse {
   btcAddress: string
   btcPublicKey: string

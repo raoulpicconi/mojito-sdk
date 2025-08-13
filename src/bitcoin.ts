@@ -13,6 +13,7 @@ import {
   BTCUTXO,
   BTCBalance,
   BTCBalanceResponse,
+  RequestSecretHashResponse,
 } from "./types"
 
 /**
@@ -45,6 +46,10 @@ export async function getBTCCredentials(client: Client): Promise<BTCCredentialsR
     }
     throw new Error(`Failed to get BTC credentials: ${error instanceof Error ? error.message : "Unknown error"}`)
   }
+}
+
+export async function requestSecretHash(client: Client): Promise<RequestSecretHashResponse> {
+  return client.requestSecretHash({})
 }
 
 /**
