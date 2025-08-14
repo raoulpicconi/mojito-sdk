@@ -432,6 +432,9 @@ export type ExtractHtlcSecretResponse = SignTransactionResponse
 export type RefundHtlcParams = Parameters<Client["refundHtlc"]>[0]
 export type RefundHtlcResponse = SignTransactionResponse
 
+export type SpendHtlcParams = Parameters<Client["spendHtlc"]>[0]
+export type SpendHtlcResponse = SignTransactionResponse
+
 // Challenge Signing Types
 export interface SignChallengeArgs {
   message: string
