@@ -192,19 +192,40 @@ export async function broadcastBTCTransaction(signedTxHex: string, isTestnet: bo
       throw new Error("Signed transaction hex is required")
     }
 
-    // Determine the appropriate API endpoint based on network
-    const apiUrl = isTestnet
-      ? "https://api.blockcypher.com/v1/btc/test3/txs/push"
-      : "https://api.blockcypher.com/v1/btc/main/txs/push"
+    // First try mempool.space
+    const mempoolBaseUrl = isTestnet ? "https://mempool.space/testnet" : "https://mempool.space"
+    try {
+      const mempoolResponse = await fetch(`${mempoolBaseUrl}/api/tx`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+        },
+        body: signedTxHex,
+      })
+
+      if (mempoolResponse.ok) {
+        const txidText = await mempoolResponse.text()
+        const txid = txidText.trim().replace(/^"|"$/g, "")
+        if (!txid) {
+          throw new Error("Empty txid returned by mempool.space")
+        }
+        return txid
+      }
+
+      // If mempool.space returns a non-2xx, fall through to BlockCypher
+    } catch (primaryErr) {
+      // Swallow and attempt fallback below
+    }
+
+    // Fallback to BlockCypher API
+    const apiUrl = isTestnet ? "https://blockstream.info/testnet/api/tx" : "https://blockstream.info/api/tx"
 
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        tx: signedTxHex,
-      }),
+      body: signedTxHex,
     })
 
     if (!response.ok) {
