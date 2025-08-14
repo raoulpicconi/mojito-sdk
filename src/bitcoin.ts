@@ -162,6 +162,8 @@ export async function refundBTCHTLC(client: Client, request: BTCHTLCRefundReques
       } as RefundBTCHTLCParams,
     })
 
+    console.log(response)
+
     if (!response.signedTxHex || !response.transactionId) {
       throw new Error("Invalid HTLC refund response from wallet")
     }
