@@ -1,18 +1,20 @@
-import { UseQueryResult, useQuery } from "@tanstack/react-query"
+import { UseQueryOptions, UseQueryResult, useQuery } from "@tanstack/react-query"
 import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
 import { BTCCredentialsResponse } from "../../types"
 import { getBTCCredentials } from "../../bitcoin"
+
+export type UseBTCCredentialsOptions = Omit<UseQueryOptions<BTCCredentialsResponse, Error>, "queryKey" | "queryFn">
 
 /**
  * Hook for getting Bitcoin credentials (address and public key)
  * @returns A query object for BTC credentials that can be used with React Query
  * @throws {MintlayerClientNotFoundError} If the Mintlayer client is not initialized
  */
-export function useBTCCredentials(): UseQueryResult<BTCCredentialsResponse, Error> {
+export function useBTCCredentials(options?: UseBTCCredentialsOptions) {
   const client = useClient()
 
-  return useQuery<BTCCredentialsResponse, Error>({
+  return useQuery({
     queryKey: ["mintlayer", "btc", "credentials"],
     queryFn: async () => {
       if (!client) throw new MintlayerClientNotFoundError()
@@ -27,5 +29,6 @@ export function useBTCCredentials(): UseQueryResult<BTCCredentialsResponse, Erro
       }
       return failureCount < 3
     },
+    ...options,
   })
 }
