@@ -3,6 +3,8 @@ import { MintlayerClientNotFoundError } from "../errors"
 import { useClient } from "./useClient"
 import { BTCCredentialsResponse } from "../../types"
 import { getBTCCredentials } from "../../bitcoin"
+import { useAddressesHash } from "./useAddressesHash"
+import { useAccount, useNetwork } from ".."
 
 export type UseBTCCredentialsOptions = Omit<UseQueryOptions<BTCCredentialsResponse, Error>, "queryKey" | "queryFn">
 
@@ -13,14 +15,18 @@ export type UseBTCCredentialsOptions = Omit<UseQueryOptions<BTCCredentialsRespon
  */
 export function useBTCCredentials(options?: UseBTCCredentialsOptions) {
   const client = useClient()
+  const { network } = useNetwork()
+  const { data: addressesHash, isSuccess: isHashReady } = useAddressesHash()
+
+  const currentNetwork = network || "mainnet"
 
   return useQuery({
-    queryKey: ["mintlayer", "btc", "credentials"],
+    queryKey: ["mintlayer", "btc", "credentials", currentNetwork, addressesHash],
     queryFn: async () => {
       if (!client) throw new MintlayerClientNotFoundError()
       return getBTCCredentials(client)
     },
-    enabled: !!client,
+    enabled: !!client && isHashReady && !!addressesHash,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: (failureCount, error) => {
       // Don't retry if wallet doesn't support Bitcoin operations
