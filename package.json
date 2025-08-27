@@ -42,7 +42,7 @@
     "docs": "typedoc --entryPointStrategy expand src"
   },
   "dependencies": {
-    "@mintlayer/sdk": "^1.0.22"
+    "@mintlayer/sdk": "^1.0.23"
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5.0.0",
