@@ -6,6 +6,7 @@ import {
   BTCHTLCRefundRequest,
   BTCHTLCCreateResponse,
   BTCTransactionResponse,
+  BTCDetailedTransaction,
   GetBTCCredentialsParams,
   CreateBTCHTLCParams,
   SpendBTCHTLCParams,
@@ -329,6 +330,30 @@ export async function fetchBTCUTXOsFromBlockstream(address: string, isTestnet: b
     throw new Error(
       `Error fetching UTXOs from blockstream.info: ${error instanceof Error ? error.message : "Unknown error"}`,
     )
+  }
+}
+
+/**
+ * Get detailed Bitcoin transaction from mempool.space API
+ * @param txid - Transaction ID to fetch
+ * @param isTestnet - Whether to use testnet or mainnet
+ * @returns Promise resolving to detailed transaction
+ * @throws Error if fetch fails
+ */
+
+export async function getBTCTransaction(txid: string, isTestnet: boolean = false): Promise<BTCDetailedTransaction> {
+  try {
+    const baseUrl = isTestnet ? "https://mempool.space/testnet" : "https://mempool.space"
+    const response = await fetch(`${baseUrl}/api/tx/${txid}`)
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch transaction: ${response.statusText}`)
+    }
+
+    const transaction = await response.json()
+    return transaction as BTCDetailedTransaction
+  } catch (error) {
+    throw new Error(`Failed to get BTC transaction: ${error instanceof Error ? error.message : "Unknown error"}`)
   }
 }
 

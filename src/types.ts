@@ -522,6 +522,46 @@ export interface BTCTransactionResponse {
   transactionId: string // Transaction ID
 }
 
+// Detailed Bitcoin Transaction from mempool.space API
+export interface BTCDetailedTransaction {
+  txid: string
+  version: number
+  locktime: number
+  vin: {
+    txid: string
+    vout: number
+    prevout: {
+      scriptpubkey: string
+      scriptpubkey_asm: string
+      scriptpubkey_type: string
+      scriptpubkey_address: string
+      value: number
+    }
+    scriptsig: string
+    scriptsig_asm: string
+    witness: string[]
+    is_coinbase: boolean
+    sequence: number
+  }[]
+  vout: {
+    scriptpubkey: string
+    scriptpubkey_asm: string
+    scriptpubkey_type: string
+    scriptpubkey_address: string
+    value: number
+  }[]
+  size: number
+  weight: number
+  sigops: number
+  fee: number
+  status: {
+    confirmed: boolean
+    block_height?: number
+    block_hash?: string
+    block_time?: number
+  }
+}
+
 export interface BTCHTLCCreateResponse {
   signedTxHex: string // Signed transaction ready to broadcast
   transactionId: string // Transaction ID of the funding transaction
