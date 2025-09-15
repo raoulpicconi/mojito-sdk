@@ -1,8 +1,6 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { useAccount } from "./useAccount"
 import { useNetwork } from "./useNetwork"
-import { useBTCCredentials } from "./useBTCCredentials"
-import { MintlayerProviderNotFoundError } from "../errors"
 import { BTCBalanceResponse } from "../../types"
 import { getBTCBalance } from "../../bitcoin"
 
@@ -19,20 +17,19 @@ type UseBTCBalanceOptions = Omit<UseQueryOptions<BTCBalanceResponse, Error>, "qu
 export function useBTCBalance(options?: UseBTCBalanceOptions) {
   const { data: accountData } = useAccount()
   const { network } = useNetwork()
-  const { data: btcCredentials, isSuccess: isCredentialsReady } = useBTCCredentials()
 
   const currentNetwork = network || "mainnet"
   const isTestnet = currentNetwork === "testnet"
 
   return useQuery({
-    queryKey: ["mintlayer", "btc", "balance", currentNetwork, btcCredentials?.btcAddress],
+    queryKey: ["mintlayer", "btc", "balance", currentNetwork, accountData?.addressesByChain.bitcoin.receiving[0]],
     queryFn: async () => {
-      if (!btcCredentials?.btcAddress) {
+      if (!accountData?.addressesByChain.bitcoin.receiving[0]) {
         throw new Error("Bitcoin address not available")
       }
-      return getBTCBalance(btcCredentials.btcAddress, isTestnet)
+      return getBTCBalance(accountData.addressesByChain.bitcoin.receiving[0], isTestnet)
     },
-    enabled: !!accountData?.isConnected && isCredentialsReady && !!btcCredentials?.btcAddress,
+    enabled: !!accountData?.isConnected && !!accountData?.addressesByChain.bitcoin.receiving[0],
     staleTime: 30 * 1000, // 30 seconds - Bitcoin data doesn't change frequently
     refetchInterval: 60 * 1000, // Refetch every minute
     retry: (failureCount, error) => {

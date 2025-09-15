@@ -28,6 +28,7 @@ export interface GetNetworkResponse {
 export interface CheckConnectionResponse {
   isConnected: boolean
   address: AccountAddresses
+  addressesByChain: AddressesByChain
 }
 
 export interface Delegation {
