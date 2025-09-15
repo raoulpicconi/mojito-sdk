@@ -24,10 +24,10 @@ export function useConnect() {
     mutationFn: async () => {
       if (!client) throw new MintlayerClientNotFoundError()
       storageService.setItem(storageKeys.connectionState, "connected")
-      const { addresses, addressesByChain } = await client.connect()
-      setAddresses(addresses as any)
+      const { address, addressesByChain } = await client.connect()
+      setAddresses(address as any)
       setAddressesByChain(addressesByChain as any)
-      return addresses
+      return address
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["mintlayer", "account"] })
