@@ -3,7 +3,7 @@
 import { localStorageService } from "../storage"
 import { MintlayerConfig, MintlayerState, Storage, StorageKeys } from "./types"
 import React, { createContext, ReactNode, useMemo, useState, useEffect, useCallback, useRef } from "react"
-import { AccountAddresses, Network } from "../types"
+import { AccountAddresses, AddressesByChain, Network } from "../types"
 import { MintlayerAPIClient } from "../api"
 import { isValidUrl, normalizeUrl } from "../utils"
 import { Client } from "@mintlayer/sdk"
@@ -19,6 +19,7 @@ interface MintlayerContextValue {
   state: MintlayerState
   setNetwork: (network: Network) => void
   setAddresses: (addresses: AccountAddresses) => void
+  setAddressesByChain: (addressesByChain: AddressesByChain) => void
   storageService: Storage
   storageKeys: StorageKeys
   apiClient: MintlayerAPIClient
@@ -65,6 +66,10 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
         mainnet: { receiving: [], change: [] },
         testnet: { receiving: [], change: [] },
       },
+      addressesByChain: {
+        bitcoin: { receiving: [], change: [], publicKeys: { receiving: [], change: [] } },
+        mintlayer: { receiving: [], change: [], publicKeys: { receiving: [], change: [] } },
+      },
     }
   })
 
@@ -89,8 +94,9 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
         const isDisconnected = storageService.getItem(storageKeys.connectionState) === "disconnected"
 
         if (autoConnect && !isDisconnected) {
-          const addresses = await client.current.connect()
-          setAddresses(addresses as any)
+          const { address, addressesByChain } = await client.current.connect()
+          setAddresses(address as any)
+          setAddressesByChain(addressesByChain as any)
           queryClient.invalidateQueries({ queryKey: ["mintlayer", "account"] })
         }
       }
@@ -114,6 +120,10 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
     setState((prev) => ({ ...prev, addresses }))
   }, [])
 
+  const setAddressesByChain = useCallback((addressesByChain: AddressesByChain) => {
+    setState((prev) => ({ ...prev, addressesByChain }))
+  }, [])
+
   const apiClient = useMemo(() => {
     return new MintlayerAPIClient(state.apiServer)
   }, [state.apiServer])
@@ -127,8 +137,9 @@ export function MintlayerProvider({ children, config }: MintlayerProviderProps) 
       storageKeys,
       apiClient,
       setAddresses,
+      setAddressesByChain,
     }),
-    [client, state, setNetwork, apiClient, storageService, storageKeys, setAddresses],
+    [client, state, setNetwork, apiClient, storageService, storageKeys, setAddresses, setAddressesByChain],
   )
 
   return <MintlayerContext.Provider value={value}>{children}</MintlayerContext.Provider>

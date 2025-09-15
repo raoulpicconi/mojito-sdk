@@ -14,6 +14,11 @@ export interface AccountAddresses {
   testnet: AddressData
 }
 
+export interface AddressesByChain {
+  bitcoin: AddressData & { publicKeys: AddressData }
+  mintlayer: AddressData & { publicKeys: AddressData }
+}
+
 export type SetNetworkParams = Network
 
 export interface GetNetworkResponse {

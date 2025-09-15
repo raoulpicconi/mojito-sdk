@@ -1,4 +1,4 @@
-import type { AccountAddresses, Network } from "../types"
+import type { AccountAddresses, AddressesByChain, Network } from "../types"
 
 declare global {
   interface Window {
@@ -41,4 +41,5 @@ export interface MintlayerState {
   network: Network | null
   apiServer: string
   addresses: AccountAddresses
+  addressesByChain: AddressesByChain
 }
