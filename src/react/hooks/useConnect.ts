@@ -18,14 +18,15 @@ export function useConnect() {
     throw new MintlayerProviderNotFoundError()
   }
 
-  const { storageService, storageKeys, setAddresses } = context
+  const { storageService, storageKeys, setAddresses, setAddressesByChain } = context
 
   return useMutation({
     mutationFn: async () => {
       if (!client) throw new MintlayerClientNotFoundError()
       storageService.setItem(storageKeys.connectionState, "connected")
-      const addresses = await client.connect()
+      const { addresses, addressesByChain } = await client.connect()
       setAddresses(addresses as any)
+      setAddressesByChain(addressesByChain as any)
       return addresses
     },
     onSuccess: () => {

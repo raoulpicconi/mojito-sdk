@@ -18,7 +18,7 @@ export function useDisconnect() {
     throw new MintlayerProviderNotFoundError()
   }
 
-  const { storageService, storageKeys, setAddresses } = context
+  const { storageService, storageKeys, setAddresses, setAddressesByChain } = context
 
   return useMutation({
     mutationFn: () => {
@@ -26,6 +26,11 @@ export function useDisconnect() {
       setAddresses({
         mainnet: { receiving: [], change: [] },
         testnet: { receiving: [], change: [] },
+      })
+
+      setAddressesByChain({
+        bitcoin: { receiving: [], change: [], publicKeys: { receiving: [], change: [] } },
+        mintlayer: { receiving: [], change: [], publicKeys: { receiving: [], change: [] } },
       })
 
       if (!client) throw new MintlayerClientNotFoundError()

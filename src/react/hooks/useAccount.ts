@@ -61,7 +61,7 @@ export function useAccount(options?: UseAccountOptions) {
           addressesByChain: emptyAddressesByChain,
         }
       }
-      if (addresses[network || "mainnet"]?.receiving?.length === 0) {
+      if (addresses[network || "mainnet"]?.receiving?.length === 0 && addressesByChain.bitcoin.receiving.length === 0) {
         return {
           isConnected: false,
           address: emptyAddresses,
