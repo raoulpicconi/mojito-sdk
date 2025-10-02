@@ -20,7 +20,7 @@ export function useCreateHtlc() {
   return useMutation({
     mutationFn: async (params: CreateHtlcParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
-      return client.createHtlc(params) as unknown as Promise<{
+      const response = (await client.createHtlc(params)) as unknown as {
         transactionHex: string
         refundTx: {
           transactionJSONrepresentation: {
@@ -41,7 +41,8 @@ export function useCreateHtlc() {
             witness_input: string
           }
         }
-      }>
+      }
+      return client.broadcastTx(response.transactionHex)
     },
     onSuccess: async () => {
       const addressesHash = await getAddressesHash(
