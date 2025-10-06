@@ -21,7 +21,11 @@ export function useCreateHtlc() {
     mutationFn: async (params: CreateHtlcParams) => {
       if (!client) throw new MintlayerClientNotFoundError()
       const response = await client.createHtlc(params)
-      return client.broadcastTx(response)
+
+      const secretHash = response.slice(100, 140)
+
+      const res = await client.broadcastTx(response)
+      return { secretHash, ...res }
     },
     onSuccess: async () => {
       const addressesHash = await getAddressesHash(
