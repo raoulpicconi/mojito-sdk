@@ -108,7 +108,7 @@ export async function createBTCHTLC(client: Client, request: BTCHTLCCreateReques
 export async function spendBTCHTLC(client: Client, request: BTCHTLCSpendRequest): Promise<BTCTransactionResponse> {
   try {
     // Validate request parameters
-    if (!request.utxo || !request.redeemScriptHex || !request.to || !request.secret) {
+    if (!request.utxo || !request.redeemScriptHex || !request.to) {
       throw new Error("Missing required HTLC spend parameters")
     }
 
